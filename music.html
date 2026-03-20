@@ -157,6 +157,18 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
     color: #666;
     margin-bottom: 5px !important;
 }
+/* 讓 Passage 連結看起來更像輔助文字 */
+.progress-text a {
+    color: #68d;
+    text-decoration: none;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.progress-text a:hover {
+    color: #8af;
+    text-decoration: underline;
+}
 .srs-nav button {
     margin: 10px 5px;
     min-width: 120px;
@@ -225,6 +237,12 @@ h1 {
         font-size: 0.9em;
         padding: 8px 5px;
     }
+}
+#ui-bar {
+    display: none;
+}
+#story {
+    margin-left: 0 !important;
 }</style><script role="script" id="twine-user-script" type="text/twine-javascript">setup.gasUrl = "https://script.google.com/macros/s/AKfycbxEyV7EGxfVWK3qy-NfPjl5z3aEkbEPMA8pJjs_Yb4bZhe_grDPUkIk7cmQhWFJ7a_VqQ/exec";
 
 // --- 語音發音功能 ---
@@ -307,26 +325,17 @@ $(document).on('keydown', function(ev) {
 
     [[回主說明頁|Introduction]]
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="Introduction" tags="" position="650,50" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
-! 🎵 音樂術語 AI 記憶教練
-這是一個結合了 **SRS (間隔重複)** 記憶法的學習系統。
+&lt;h1&gt;🎵 音樂術語 AI 記憶教練&lt;/h1&gt;
+&lt;p&gt;專屬您的教甄備考助手&lt;/p&gt;
 
-### 📖 練習說明
-1. 點擊開始後，系統會從雲端隨機提取 **10 個名詞**。
-2. 看到單字後，試著回想其意義，然後**翻面**。
-3. 根據您的熟悉度選擇：
-   - **Again**: 完全想不起來（2張牌後會再次出現）。
-   - **Hard**: 想了很久或不確定（移到本輪最後面）。
-   - **Easy**: 立即反射（從本輪移除）。
-
-### ⌨️ 學霸快捷鍵
-- **[空白鍵]**：翻面顯示答案
-- **[數字鍵 1]**：選擇 Again
-- **[數字鍵 2]**：選擇 Hard
-- **[數字鍵 3]**：選擇 Easy
-
-&lt;&lt;button &quot;開始學習 10 個名詞&quot;&gt;&gt;
+&lt;br&gt;
+&lt;&lt;button &quot;開始今日練習 (10個名詞)&quot;&gt;&gt;
     &lt;&lt;run setup.fetchWords()&gt;&gt;
 &lt;&lt;/button&gt;&gt;
+
+&lt;div style=&quot;margin-top: 25px; font-size: 0.9em;&quot;&gt;
+    [[📖 第一次使用？請看操作說明|Instructions]]
+&lt;/div&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
 &lt;div class=&quot;progress-text&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
@@ -382,6 +391,22 @@ $(document).on('keydown', function(ev) {
     &lt;&lt;/if&gt;&gt;
 &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="5" name="Instructions" tags="" position="625,375" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;text-align: left;&quot;&gt;
+!! 📖 系統操作說明
+!!! 🧠 記憶演算法 (SRS)
+本系統模擬 Anki 的記憶機制，確保您花時間在最不熟的名詞上：
+*   **Again (按 1)**：完全想不起來。單字會插入在 2 張牌後再次出現，進行強力複習。
+*   **Hard (按 2)**：有點模糊。單字會移到這 10 個名詞的最後面，待會再次確認。
+*   **Easy (按 3)**：已經記住。單字會從本次練習中移除，並記錄到雲端。
+!!! ⌨️ 學霸快捷鍵 (電腦版專用)
+利用鍵盤操作可以大幅提升背誦效率：
+*   **[空白鍵]**：翻面顯示答案。
+*   **[數字鍵 1]**：對應 **Again**。
+*   **[數字鍵 2]**：對應 **Hard**。
+*   **[數字鍵 3]**：對應 **Easy**。
+&lt;div style=&quot;text-align: center;&quot;&gt;
+    [[我知道了，返回首頁|Introduction]]
+&lt;/div&gt;
 &lt;/div&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */
