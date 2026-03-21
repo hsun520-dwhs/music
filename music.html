@@ -120,12 +120,12 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 
 /* 單字標題 */
 .word-title {
-    font-size: 3.5em !important;
+    font-size: 3.2em !important;    /* 稍微縮小一點點字體，避免長名詞折行 */
     color: #fff;
     line-height: 1.1;
-    margin: 5px 0 15px 0 !important; /* 上 5px, 下 15px */
+    margin-top: 10px !important;    /* 上方留一點距離 */
+    margin-bottom: 30px !important; /* 【關鍵】下方推開 30px 的距離 */
 }
-
 .card-box {
     background: #1a1a1a;
     padding: 15px 25px;
@@ -243,6 +243,167 @@ h1 {
 }
 #story {
     margin-left: 0 !important;
+}
+.stats-container {
+    background: #000;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #444;
+}
+
+.stats-main {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stats-sub {
+    font-size: 0.85em;
+    color: #aaa;
+}
+/* 狀態標籤基礎樣式 */
+.status-tag {
+    font-size: 0.6em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: normal;
+}
+
+/* 各個狀態的顏色設定 */
+.status-tag.easy {
+    background-color: #262; /* 熟悉 - 綠色 */
+    color: #dfd;
+}
+
+.status-tag.hard {
+    background-color: #660; /* 不熟悉 - 黃褐色 */
+    color: #ffc;
+}
+
+.status-tag.again {
+    background-color: #822; /* 非常不熟 - 紅色 */
+    color: #fdd;
+}
+
+.highlight {
+    color: #00ffcc;
+    font-size: 1.2em;
+}
+
+.stats-loading {
+    font-size: 0.9em;
+    color: #68d;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+/* 額外優化：讓聽發音按鈕自己也帶一點上下間距 */
+.front-section button {
+    margin-bottom: 20px !important;
+}
+/* 縮小總結列表容器的邊距 */
+.summary-container {
+    text-align: left;
+    margin: 10px 0 !important; /* 上下只留 10px */
+    background: #111;
+    border-radius: 8px;
+    padding: 5px 0; /* 縮小內距 */
+    border: 1px solid #333;
+    max-height: 400px; /* 避免列表太長 */
+    overflow-y: auto;
+}
+
+/* 每一行術語縮小高度 */
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 12px !important; /* 壓縮行高 */
+    border-bottom: 1px solid #222;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+/* 左側文字 */
+.summary-word {
+    font-weight: bold;
+    color: #fff;
+    flex: 1;
+}
+
+/* 右側區域（翻譯 + 按鈕） */
+.summary-action {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 翻譯與按鈕的間距 */
+}
+
+/* 列表中的中文翻譯（稍微縮小灰色處理） */
+.summary-trans {
+    font-size: 0.9em;
+    color: #888;
+}
+
+/* 列表中的發音按鈕（圓角、縮小） */
+.summary-action button {
+    padding: 2px 10px !important;
+    min-width: 40px !important;
+    height: 30px !important;
+    margin: 0 !important;
+    font-size: 0.8em !important;
+    background-color: #333 !important;
+}
+/* 下方按鈕區塊 */
+.finish-actions {
+    margin-top: 5px !important; /* 緊貼列表底部 */
+}
+
+.finish-actions button {
+    padding: 8px 20px !important;
+}
+
+.home-link-area {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+/* 確保複習清單中的發音按鈕不要太大 */
+.summary-action button {
+    padding: 2px 8px !important;
+    min-width: 35px !important;
+    height: 28px !important;
+    font-size: 0.75em !important;
+}
+/* 自定義滾動條美化 */
+.summary-container::-webkit-scrollbar {
+    width: 6px;
+}
+.summary-container::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+.summary-container::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+}
+.summary-container::-webkit-scrollbar-thumb:hover {
+    background: #68d;
+}
+
+/* 讓詞庫頁面的連結看起來更像導航 */
+.home-link-area a {
+    color: #68d;
+    text-decoration: none;
+    font-weight: bold;
+}
+/* 微調單字名稱寬度，確保標籤不會太擠 */
+.summary-word {
+    flex: 1.5; 
+    display: flex;
+    align-items: center;
 }</style><script role="script" id="twine-user-script" type="text/twine-javascript">setup.gasUrl = "https://script.google.com/macros/s/AKfycbxEyV7EGxfVWK3qy-NfPjl5z3aEkbEPMA8pJjs_Yb4bZhe_grDPUkIk7cmQhWFJ7a_VqQ/exec";
 
 // --- 語音發音功能 ---
@@ -267,6 +428,7 @@ setup.fetchWords = function() {
         dataType: "jsonp",
         success: function(data) {
             State.variables.Queue = data;
+          State.variables.SessionList = [...data]; // 【新增】備份這 10 個術語
             State.variables.TotalInSession = data.length;
             State.variables.FinishedCount = 0;
             State.variables.IsFlipped = false;
@@ -311,31 +473,110 @@ $(document).on('keydown', function(ev) {
             }
         }
     }
-});</script><tw-passagedata pid="1" name="StoryInit" tags="" position="475,100" size="100,100">&lt;&lt;set $Queue to []&gt;&gt;
+});
+// 抓取雲端統計數據
+setup.fetchStats = function() {
+    $.ajax({
+        url: setup.gasUrl,
+        method: "GET",
+        data: { action: "getStats" },
+        dataType: "jsonp",
+        success: function(data) {
+            State.variables.CloudStats = data;
+            
+            // 建立要顯示的 HTML 內容
+            let statsHtml = `
+                <div class="stats-container">
+                    <div class="stats-main">
+                        🎯 已掌握術語：<span class="highlight">${data.mastered} / ${data.total}</span>
+                    </div>
+                    <div class="stats-sub">
+                        ❌ 不熟悉：${data.notFamiliar} | 
+                        ⚠️ 有點熟悉：${data.somewhatFamiliar} | 
+                        ⚪ 從未練習：${data.never}
+                    </div>
+                </div>
+            `;
+            
+            // 直接尋找 ID 並替換內容，移除載入中的樣式
+            $('#stats-area').removeClass('stats-loading').html(statsHtml);
+        },
+        error: function() {
+            $('#stats-area').html('<div style="color:red">同步失敗，請檢查網路。</div>');
+        }
+    });
+};
+// 抓取所有练习过的词并跳轉
+setup.fetchArchive = function() {
+    // 顯示一個提示或載入畫面
+    $('#stats-area').html('<div class="stats-loading">正在提取個人詞庫...</div>');
+
+    $.ajax({
+        url: setup.gasUrl,
+        method: "GET",
+        data: { action: "getAllPracticed" },
+        dataType: "jsonp",
+        success: function(data) {
+            State.variables.ArchiveList = data;
+            Engine.play("ArchivePage");
+        },
+        error: function() {
+            alert("抓取詞庫失敗。");
+        }
+    });
+};</script><tw-passagedata pid="1" name="StoryInit" tags="" position="475,100" size="100,100">&lt;&lt;set $Queue to []&gt;&gt;
 &lt;&lt;set $IsFlipped to false&gt;&gt;
 &lt;&lt;set $FinishedCount to 0&gt;&gt;
 &lt;&lt;set $TotalInSession to 0&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
-    &lt;h1&gt;🎉 練習完成！&lt;/h1&gt;
-    &lt;p&gt;您已完成本次 10 個名詞的循環記憶。&lt;/p&gt;
-    &lt;p&gt;記憶結果已記錄在您的 Google 試算表中。&lt;/p&gt;
-    &lt;br&gt;
-    &lt;&lt;button &quot;再背 10 個名詞&quot;&gt;&gt;
-        &lt;&lt;run setup.fetchWords()&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
+&lt;&lt;nobr&gt;&gt;
+    &lt;h2 style=&quot;margin: 0 0 10px 0 !important;&quot;&gt;🎉 本輪複習清單&lt;/h2&gt;
+    
+    &lt;div class=&quot;summary-container&quot;&gt;
+        &lt;&lt;for _item range $SessionList&gt;&gt;
+            /* 【關鍵】鎖定當前單字，解決發音重複問題 */
+            &lt;&lt;capture _item&gt;&gt;
+                &lt;div class=&quot;summary-row&quot;&gt;
+                    &lt;span class=&quot;summary-word&quot;&gt;_item.word&lt;/span&gt;
+                    &lt;span class=&quot;summary-action&quot;&gt;
+                        &lt;span class=&quot;summary-trans&quot;&gt;_item.trans&lt;/span&gt;
+                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;&lt;&lt;run setup.speak(_item.word)&gt;&gt;&lt;&lt;/button&gt;&gt;
+                    &lt;/span&gt;
+                &lt;/div&gt;
+            &lt;&lt;/capture&gt;&gt;
+        &lt;&lt;/for&gt;&gt;
+    &lt;/div&gt;
 
-    [[回主說明頁|Introduction]]
+    &lt;!-- 緊湊型按鈕區 --&gt;
+    &lt;div class=&quot;finish-actions&quot;&gt;
+        &lt;&lt;button &quot;再背 10 個名詞&quot;&gt;&gt;
+            &lt;&lt;run setup.fetchWords()&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
+        &lt;div class=&quot;home-link-area&quot;&gt;
+            [[回主說明頁|Introduction]]
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="Introduction" tags="" position="650,50" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;!-- 預留一個統計區域，並給它一個 ID 叫 stats-area --&gt;
+    &lt;div id=&quot;stats-area&quot; class=&quot;stats-loading&quot;&gt;正在同步雲端進度...&lt;/div&gt;
+    &lt;!-- 進入此頁面時觸發抓取 --&gt;
+    &lt;&lt;done&gt;&gt;
+        &lt;&lt;run setup.fetchStats()&gt;&gt;
+    &lt;&lt;/done&gt;&gt;
 &lt;h1&gt;🎵 音樂術語 AI 記憶教練&lt;/h1&gt;
-&lt;p&gt;專屬您的教甄備考助手&lt;/p&gt;
-
+&lt;p&gt;您的專屬教甄備考助手&lt;/p&gt;
 &lt;br&gt;
 &lt;&lt;button &quot;開始今日練習 (10個名詞)&quot;&gt;&gt;
     &lt;&lt;run setup.fetchWords()&gt;&gt;
 &lt;&lt;/button&gt;&gt;
-
-&lt;div style=&quot;margin-top: 25px; font-size: 0.9em;&quot;&gt;
-    [[📖 第一次使用？請看操作說明|Instructions]]
-&lt;/div&gt;
+&lt;div style=&quot;margin-top: 20px; font-size: 0.95em;&quot;&gt;
+        &lt;!-- 【修復點】改用 &lt;&lt;link&gt;&gt; 取代 &lt;a&gt; --&gt;
+        &lt;&lt;link &quot;🔍 查詢已複習術語詞庫&quot;&gt;&gt;
+            &lt;&lt;run setup.fetchArchive()&gt;&gt;
+        &lt;&lt;/link&gt;&gt;
+        &lt;br&gt;&lt;br&gt;
+        [[📖 操作說明|Instructions]]
+    &lt;/div&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
 &lt;div class=&quot;progress-text&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
@@ -407,6 +648,38 @@ $(document).on('keydown', function(ev) {
 &lt;div style=&quot;text-align: center;&quot;&gt;
     [[我知道了，返回首頁|Introduction]]
 &lt;/div&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="6" name="ArchivePage" tags="" position="750,350" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;&lt;nobr&gt;&gt;
+    &lt;h2 style=&quot;margin: 0 0 10px 0 !important;&quot;&gt;📚 已複習術語庫&lt;/h2&gt;
+    &lt;p class=&quot;progress-text&quot;&gt;共收錄了 &lt;&lt;print $ArchiveList.length&gt;&gt; 個已練習名詞&lt;/p&gt;
+    
+    &lt;div class=&quot;summary-container&quot; style=&quot;max-height: 500px;&quot;&gt; &lt;!-- 詞庫可能很長，給它滾動條 --&gt;
+        &lt;&lt;if $ArchiveList.length == 0&gt;&gt;
+            &lt;div style=&quot;padding:20px; text-align:center; color:#888;&quot;&gt;尚未有練習紀錄。&lt;/div&gt;
+        &lt;&lt;else&gt;&gt;
+            &lt;&lt;for _item range $ArchiveList&gt;&gt;
+                &lt;&lt;capture _item&gt;&gt;
+                    &lt;div class=&quot;summary-row&quot;&gt;
+                        &lt;span class=&quot;summary-word&quot;&gt;
+                        _item.word
+                        /* 【新增】狀態標籤 */
+                            &lt;span @class=&quot;&#39;status-tag &#39; + _item.code&quot;&gt;_item.status&lt;/span&gt;
+                        &lt;/span&gt;
+                        &lt;span class=&quot;summary-action&quot;&gt;
+                            &lt;span class=&quot;summary-trans&quot;&gt;_item.trans&lt;/span&gt;
+                            &lt;&lt;button &quot;🔊&quot;&gt;&gt;&lt;&lt;run setup.speak(_item.word)&gt;&gt;&lt;&lt;/button&gt;&gt;
+                        &lt;/span&gt;
+                    &lt;/div&gt;
+                &lt;&lt;/capture&gt;&gt;
+            &lt;&lt;/for&gt;&gt;
+        &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;home-link-area&quot;&gt;
+        &lt;br&gt;
+        [[返回首頁|Introduction]]
+    &lt;/div&gt;
+&lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */
