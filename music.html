@@ -104,28 +104,15 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">body {
+	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">#ui-bar { display: none; }
+#story { margin-left: 0 !important; }
+
+body {
     background-color: #111;
     color: #eee;
     font-family: "Microsoft JhengHei", sans-serif;
 }
-/* 移除所有預設的上下間距 */
-.card-box h1, 
-.card-box h2, 
-.card-box hr, 
-.card-box p {
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
-/* 單字標題 */
-.word-title {
-    font-size: 3.2em !important;    /* 稍微縮小一點點字體，避免長名詞折行 */
-    color: #fff;
-    line-height: 1.1;
-    margin-top: 10px !important;    /* 上方留一點距離 */
-    margin-bottom: 30px !important; /* 【關鍵】下方推開 30px 的距離 */
-}
 .card-box {
     background: #1a1a1a;
     padding: 15px 25px;
@@ -135,115 +122,16 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
     max-width: 600px;
     margin: 0 auto;
 }
-.notes-box {
-    background: #262626;
-    padding: 20px;
-    margin: 20px 0;
-    text-align: left;
-    border-left: 5px solid #68d;
-    line-height: 1.6;
+
+/* 單字標題 */
+.word-title {
+    font-size: 3.2em !important;
+    color: #fff;
+    line-height: 1.1;
+    margin: 10px 0 30px 0 !important;
 }
 
-/* 翻面後的翻譯文字也縮小間距 */
-.translation {
-    color: #ffd700;
-    font-size: 2em;
-    margin: 5px 0 !important;
-}
-
-/* 進度文字 */
-.progress-text {
-    font-size: 0.8em;
-    color: #666;
-    margin-bottom: 5px !important;
-}
-/* 讓 Passage 連結看起來更像輔助文字 */
-.progress-text a {
-    color: #68d;
-    text-decoration: none;
-    margin-left: 10px;
-    font-weight: bold;
-}
-
-.progress-text a:hover {
-    color: #8af;
-    text-decoration: underline;
-}
-.srs-nav button {
-    margin: 10px 5px;
-    min-width: 120px;
-    height: 50px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#btn-again { background-color: #822; border-color: #a44; }
-#btn-hard { background-color: #444; border-color: #666; }
-#btn-easy { background-color: #262; border-color: #484; }
-
-/* 調整標題（單字）的邊距 */
-h1 {
-    font-size: 3em;
-    margin-top: 5px !important;    /* 強制縮小上方間距 */
-    margin-bottom: 15px !important; /* 調整下方與按鈕的間距 */
-}
-/* 分隔線 */
-.tight-hr {
-    border: 0;
-    border-top: 1px solid #444;
-    margin: 15px 0 !important;
-}
-/* 翻譯文字 */
-.translation {
-    color: #ffd700;
-    font-size: 2.2em;
-    font-weight: bold;
-    margin-bottom: 10px !important;
-}
-/* 筆記區塊 */
-.notes-box {
-    background: #262626;
-    padding: 12px 15px;
-    margin: 10px 0 !important;
-    text-align: left;
-    border-left: 4px solid #68d;
-    font-size: 1em;
-    line-height: 1.4;
-}
-/* 按鈕區 */
-.srs-nav {
-    margin-top: 15px !important;
-}
-
-.srs-nav button {
-    margin: 5px;
-    padding: 10px 15px;
-}
-
-/* 當螢幕寬度小於 480px 時執行的設定 */
-@media screen and (max-width: 480px) {
-    .word-title {
-        font-size: 2.2em !important; /* 縮小單字字體，避免折行 */
-    }
-    .translation {
-        font-size: 1.6em !important;
-    }
-    .card-box {
-        padding: 10px 15px; /* 縮小邊距，增加可用空間 */
-        width: 95%;        /* 讓卡片佔滿螢幕寬度 */
-    }
-    .srs-nav button {
-        min-width: 80px;   /* 縮小按鈕寬度，讓三個按鈕能排成一列 */
-        font-size: 0.9em;
-        padding: 8px 5px;
-    }
-}
-#ui-bar {
-    display: none;
-}
-#story {
-    margin-left: 0 !important;
-}
+/* 數據儀表板 */
 .stats-container {
     background: #000;
     padding: 10px;
@@ -251,263 +139,88 @@ h1 {
     margin-bottom: 20px;
     border: 1px solid #444;
 }
+.highlight { color: #00ffcc; font-weight: bold; }
+.stats-sub { font-size: 0.85em; color: #aaa; }
 
-.stats-main {
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.stats-sub {
-    font-size: 0.85em;
-    color: #aaa;
-}
-/* 狀態標籤基礎樣式 */
-.status-tag {
-    font-size: 0.6em;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 8px;
-    vertical-align: middle;
-    font-weight: normal;
-}
-
-/* 各個狀態的顏色設定 */
-.status-tag.easy {
-    background-color: #262; /* 熟悉 - 綠色 */
-    color: #dfd;
-}
-
-.status-tag.hard {
-    background-color: #660; /* 不熟悉 - 黃褐色 */
-    color: #ffc;
-}
-
-.status-tag.again {
-    background-color: #822; /* 非常不熟 - 紅色 */
-    color: #fdd;
-}
-
-.highlight {
-    color: #00ffcc;
-    font-size: 1.2em;
-}
-
-.stats-loading {
-    font-size: 0.9em;
-    color: #68d;
-    font-style: italic;
-    margin-bottom: 20px;
-}
-/* 額外優化：讓聽發音按鈕自己也帶一點上下間距 */
-.front-section button {
-    margin-bottom: 20px !important;
-}
-/* 縮小總結列表容器的邊距 */
-.summary-container {
+/* 重點摘要與來源 */
+.notes-box {
+    background: #262626;
+    padding: 15px;
+    margin: 10px 0 !important;
     text-align: left;
-    margin: 10px 0 !important; /* 上下只留 10px */
-    background: #111;
-    border-radius: 8px;
-    padding: 5px 0; /* 縮小內距 */
-    border: 1px solid #333;
-    max-height: 400px; /* 避免列表太長 */
-    overflow-y: auto;
+    border-left: 4px solid #68d;
+    line-height: 1.5;
 }
-
-/* 每一行術語縮小高度 */
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 12px !important; /* 壓縮行高 */
-    border-bottom: 1px solid #222;
-}
-
-.summary-row:last-child {
-    border-bottom: none;
-}
-
-/* 左側文字 */
-.summary-word {
-    font-weight: bold;
-    color: #fff;
-    flex: 1;
-}
-
-/* 右側區域（翻譯 + 按鈕） */
-.summary-action {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* 翻譯與按鈕的間距 */
-}
-
-/* 列表中的中文翻譯（稍微縮小灰色處理） */
-.summary-trans {
-    font-size: 0.9em;
-    color: #888;
-}
-
-/* 列表中的發音按鈕（圓角、縮小） */
-.summary-action button {
-    padding: 2px 10px !important;
-    min-width: 40px !important;
-    height: 30px !important;
-    margin: 0 !important;
-    font-size: 0.8em !important;
-    background-color: #333 !important;
-}
-/* 下方按鈕區塊 */
-.finish-actions {
-    margin-top: 5px !important; /* 緊貼列表底部 */
-}
-
-.finish-actions button {
-    padding: 8px 20px !important;
-}
-
-.home-link-area {
+.source-info {
     margin-top: 10px;
-    font-size: 0.9em;
+    font-size: 0.8em;
+    color: #777;
+    border-top: 1px solid #333;
+    padding-top: 5px;
 }
 
-/* 確保複習清單中的發音按鈕不要太大 */
-.summary-action button {
-    padding: 2px 8px !important;
-    min-width: 35px !important;
-    height: 28px !important;
-    font-size: 0.75em !important;
+/* 篩選按鈕 */
+.filter-group { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+.filter-group button { 
+    padding: 5px 12px !important; background: #222 !important; border-radius: 15px !important; 
+    font-size: 0.85em !important; color: #888 !important; border: 1px solid #444 !important;
 }
-/* 自定義滾動條美化 */
-.summary-container::-webkit-scrollbar {
-    width: 6px;
-}
-.summary-container::-webkit-scrollbar-track {
-    background: #1a1a1a;
-}
-.summary-container::-webkit-scrollbar-thumb {
-    background: #444;
-    border-radius: 10px;
-}
-.summary-container::-webkit-scrollbar-thumb:hover {
-    background: #68d;
-}
+.filter-group button.active-filter { background: #35a !important; color: #fff !important; border-color: #68d !important; }
 
-/* 讓詞庫頁面的連結看起來更像導航 */
-.home-link-area a {
-    color: #68d;
-    text-decoration: none;
-    font-weight: bold;
-}
-/* 微調單字名稱寬度，確保標籤不會太擠 */
-.summary-word {
-    flex: 1.5; 
-    display: flex;
-    align-items: center;
-}
-/* 篩選按鈕群組 */
-.filter-group {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
+/* 列表 Row */
+.summary-container { text-align: left; margin: 10px 0; background: #111; border: 1px solid #333; overflow-y: auto; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-bottom: 1px solid #222; }
+.status-tag { font-size: 0.6em; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
+.status-tag.easy { background: #262; }
+.status-tag.hard { background: #660; }
+.status-tag.again { background: #822; }</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保是最新部署的網址) ---
+setup.gasUrl = "https://script.google.com/macros/s/AKfycbz-pkYUO0evDpate7IjN4cedYqX_xABUwcanLMmvz_DZBGS2ELaeb3Bn_yPjONb_DO05Q/exec";
 
-.filter-group button {
-    padding: 6px 12px !important;
-    font-size: 0.85em !important;
-    min-width: 80px !important;
-    height: auto !important;
-    background-color: #222 !important;
-    border: 1px solid #444 !important;
-    border-radius: 20px !important; /* 藥丸形按鈕 */
-    transition: all 0.2s;
-}
-
-.filter-group button:hover {
-    background-color: #444 !important;
-    border-color: #68d !important;
-}
-
-/* 讓當前選中的類別顏色亮一點 (進階) */
-.filter-group button:active, .filter-group button:focus {
-    background-color: #68d !important;
-    color: white !important;
-}
-
-/* 調整列表內的文字大小 */
-#archive-display .progress-text {
-    margin-bottom: 10px !important;
-    color: #ffd700;
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// =========================================================
-// 1. 基礎設定與網址 (請確保填入正確的 GAS 網址)
-// =========================================================
-setup.gasUrl = "https://script.google.com/macros/s/AKfycbxEyV7EGxfVWK3qy-NfPjl5z3aEkbEPMA8pJjs_Yb4bZhe_grDPUkIk7cmQhWFJ7a_VqQ/exec";
-
-// =========================================================
-// 2. 強健型雲端連線工具 (支援 3 次自動重試)
-// =========================================================
-setup.callGAS = function(actionData, successCallback, retryCount = 3) {
+// --- 2. 強健型雲端連線工具 ---
+setup.callGAS = function(actionData, successCallback, retryCount) {
+    var retries = (retryCount === undefined) ? 3 : retryCount;
     $.ajax({
         url: setup.gasUrl,
         method: "GET",
         data: actionData,
         dataType: "jsonp",
-        timeout: 10000, // 增加到 10 秒等待時間
+        timeout: 10000,
         success: function(data) {
             if (successCallback) successCallback(data);
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            if (retryCount > 0) {
-                console.warn(`連線失敗 (${textStatus})，正在進行第 ${4 - retryCount} 次重試...`);
+        error: function() {
+            if (retries > 0) {
                 setTimeout(function() {
-                    setup.callGAS(actionData, successCallback, retryCount - 1);
-                }, 1500); // 失敗後隔 1.5 秒再試
+                    setup.callGAS(actionData, successCallback, retries - 1);
+                }, 1500);
             } else {
-                console.error("連線最終失敗：", textStatus, errorThrown);
-                // 如果是在首頁同步時失敗，給予提示
                 if (actionData.action === "getStats") {
-                    $('#stats-area').html('<div style="color:#ff6666; font-size:0.8em;">同步失敗，請檢查網路後按 F5 重新整理。</div>');
+                    $('#stats-area').html('<div style="color:#ff6666;">同步失敗，請檢查網路。</div>');
                 } else {
-                    alert("目前無法連線至 Google 雲端庫，請檢查網路連線後重試。");
+                    alert("連線失敗，請檢查網路。");
                 }
             }
         }
     });
 };
 
-// =========================================================
-// 3. 核心功能函式
-// =========================================================
-
-// --- A. 抓取首頁統計數據 ---
+// --- 3. 功能函式 ---
 setup.fetchStats = function() {
     setup.callGAS({ action: "getStats" }, function(data) {
         State.variables.CloudStats = data;
-        let statsHtml = `
-            <div class="stats-container">
-                <div class="stats-main">
-                    🎯 已掌握術語：<span class="highlight">${data.mastered} / ${data.total}</span>
-                </div>
-                <div class="stats-sub">
-                    ❌ 不熟：${data.notFamiliar} | 
-                    ⚠️ 模糊：${data.somewhatFamiliar} | 
-                    ⚪ 未練習：${data.never}
-                </div>
-            </div>`;
-        $('#stats-area').removeClass('stats-loading').html(statsHtml);
+        var html = '<div class="stats-container">' +
+            '<div class="stats-main">🎯 已掌握術語：<span class="highlight">' + data.mastered + ' / ' + data.total + '</span></div>' +
+            '<div class="stats-sub">❌ 不熟：' + data.notFamiliar + ' | ⚠️ 模糊：' + data.somewhatFamiliar + ' | ⚪ 未練習：' + data.never + '</div>' +
+            '</div>';
+        $('#stats-area').removeClass('stats-loading').html(html);
     });
 };
 
-// --- B. 抓取練習單字 (每次 10 個) ---
 setup.fetchWords = function() {
-    // 進入載入狀態
-    $('#stats-area').html('<div class="stats-loading">正在從雲端庫提取 10 個名詞...</div>');
-    
+    $('#stats-area').html('<div class="stats-loading">正在提取 10 個名詞...</div>');
     setup.callGAS({ action: "getWords" }, function(data) {
         State.variables.Queue = data;
-        State.variables.SessionList = [...data]; // 完整備份本輪清單，供結束頁列表使用
+        State.variables.SessionList = data.slice();
         State.variables.TotalInSession = data.length;
         State.variables.FinishedCount = 0;
         State.variables.IsFlipped = false;
@@ -515,59 +228,38 @@ setup.fetchWords = function() {
     });
 };
 
-// --- C. 記錄記憶結果到試算表 ---
 setup.logResult = function(word, result) {
-    console.log(`正在上傳 ${word} 的結果: ${result}`);
-    setup.callGAS({ action: "log", word: word, result: result }, function() {
-        console.log("雲端紀錄成功");
-    });
+    setup.callGAS({ action: "log", word: word, result: result });
 };
 
-// --- D. 提取個人詞庫 ---
 setup.fetchArchive = function() {
-    $('#stats-area').html('<div class="stats-loading">正在提取個人完整詞庫...</div>');
+    $('#stats-area').html('<div class="stats-loading">正在提取詞庫...</div>');
     setup.callGAS({ action: "getAllPracticed" }, function(data) {
         State.variables.ArchiveList = data;
         Engine.play("ArchivePage");
     });
 };
 
-// --- E. 語音發音功能 ---
 setup.speak = function(text) {
     if (!text) return;
-    window.speechSynthesis.cancel(); // 停止目前所有發音
-    let msg = new SpeechSynthesisUtterance(text);
-    msg.lang = 'en-US'; 
-    msg.rate = 0.85; // 稍微放慢一點，教甄名詞要聽仔細
+    window.speechSynthesis.cancel();
+    var msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'en-US';
+    msg.rate = 0.85;
     window.speechSynthesis.speak(msg);
 };
 
-// =========================================================
-// 4. 鍵盤快捷鍵偵聽 (電腦學霸模式)
-// =========================================================
+// --- 4. 快捷鍵 ---
 $(document).on('keydown', function(ev) {
-    // 只在 Flashcard (背單字頁面) 才啟用快捷鍵
     if (State.passage === "Flashcard") {
-        
-        // --- 空白鍵：翻面 ---
         if (ev.code === "Space" && !State.variables.IsFlipped) {
-            ev.preventDefault(); // 防止網頁捲動
+            ev.preventDefault();
             State.variables.IsFlipped = true;
             Engine.play("Flashcard");
-        } 
-        
-        // --- 翻面後：1, 2, 3 按鈕對應 ---
-        else if (State.variables.IsFlipped) {
-            if (ev.key === "1") { 
-                // 模擬點擊 Again 按鈕
-                $(".srs-nav button:contains('Again')").click();
-            } else if (ev.key === "2") { 
-                // 模擬點擊 Hard 按鈕
-                $(".srs-nav button:contains('Hard')").click();
-            } else if (ev.key === "3") { 
-                // 模擬點擊 Easy 按鈕
-                $(".srs-nav button:contains('Easy')").click();
-            }
+        } else if (State.variables.IsFlipped) {
+            if (ev.key === "1") { $(".srs-nav button:contains('Again')").click(); }
+            else if (ev.key === "2") { $(".srs-nav button:contains('Hard')").click(); }
+            else if (ev.key === "3") { $(".srs-nav button:contains('Easy')").click(); }
         }
     }
 });</script><tw-passagedata pid="1" name="StoryInit" tags="" position="475,100" size="100,100">&lt;&lt;set $Queue to []&gt;&gt;
@@ -575,71 +267,59 @@ $(document).on('keydown', function(ev) {
 &lt;&lt;set $FinishedCount to 0&gt;&gt;
 &lt;&lt;set $TotalInSession to 0&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
-    &lt;h2 style=&quot;margin: 0 0 10px 0 !important;&quot;&gt;🎉 本輪複習清單&lt;/h2&gt;
-    
-    &lt;div class=&quot;summary-container&quot;&gt;
+    &lt;h2 style=&quot;margin-bottom:10px !important;&quot;&gt;🎉 本輪複習清單&lt;/h2&gt;
+    &lt;div class=&quot;summary-container&quot; style=&quot;max-height: 350px;&quot;&gt;
         &lt;&lt;for _item range $SessionList&gt;&gt;
-            /* 【關鍵】鎖定當前單字，解決發音重複問題 */
             &lt;&lt;capture _item&gt;&gt;
                 &lt;div class=&quot;summary-row&quot;&gt;
                     &lt;span class=&quot;summary-word&quot;&gt;_item.word&lt;/span&gt;
                     &lt;span class=&quot;summary-action&quot;&gt;
-                        &lt;span class=&quot;summary-trans&quot;&gt;_item.trans&lt;/span&gt;
+                        &lt;span style=&quot;font-size:0.8em; color:#888;&quot;&gt;_item.trans&lt;/span&gt;
                         &lt;&lt;button &quot;🔊&quot;&gt;&gt;&lt;&lt;run setup.speak(_item.word)&gt;&gt;&lt;&lt;/button&gt;&gt;
                     &lt;/span&gt;
                 &lt;/div&gt;
             &lt;&lt;/capture&gt;&gt;
         &lt;&lt;/for&gt;&gt;
     &lt;/div&gt;
-
-    &lt;!-- 緊湊型按鈕區 --&gt;
-    &lt;div class=&quot;finish-actions&quot;&gt;
-        &lt;&lt;button &quot;再背 10 個名詞&quot;&gt;&gt;
-            &lt;&lt;run setup.fetchWords()&gt;&gt;
-        &lt;&lt;/button&gt;&gt;
-        &lt;div class=&quot;home-link-area&quot;&gt;
-            [[回主說明頁|Introduction]]
-        &lt;/div&gt;
+    &lt;div style=&quot;margin-top:15px;&quot;&gt;
+        &lt;&lt;button &quot;再背 10 個名詞&quot;&gt;&gt;&lt;&lt;run setup.fetchWords()&gt;&gt;&lt;&lt;/button&gt;&gt;
+        &lt;br&gt;&lt;br&gt;
+        [[返回首頁|Introduction]]
     &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="Introduction" tags="" position="650,50" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
-&lt;!-- 預留一個統計區域，並給它一個 ID 叫 stats-area --&gt;
     &lt;div id=&quot;stats-area&quot; class=&quot;stats-loading&quot;&gt;正在同步雲端進度...&lt;/div&gt;
-    &lt;!-- 進入此頁面時觸發抓取 --&gt;
-    &lt;&lt;done&gt;&gt;
-        &lt;&lt;run setup.fetchStats()&gt;&gt;
-    &lt;&lt;/done&gt;&gt;
-&lt;h1&gt;🎵 音樂術語 AI 記憶教練&lt;/h1&gt;
-&lt;p&gt;您的專屬教甄備考助手&lt;/p&gt;
-&lt;br&gt;
-&lt;&lt;button &quot;開始今日練習 (10個名詞)&quot;&gt;&gt;
-    &lt;&lt;run setup.fetchWords()&gt;&gt;
-&lt;&lt;/button&gt;&gt;
-&lt;div style=&quot;margin-top: 20px; font-size: 0.95em;&quot;&gt;
-        &lt;!-- 【修復點】改用 &lt;&lt;link&gt;&gt; 取代 &lt;a&gt; --&gt;
-        &lt;&lt;link &quot;🔍 查詢已複習術語詞庫&quot;&gt;&gt;
-            &lt;&lt;run setup.fetchArchive()&gt;&gt;
-        &lt;&lt;/link&gt;&gt;
-        &lt;br&gt;&lt;br&gt;
+    &lt;&lt;done&gt;&gt;&lt;&lt;run setup.fetchStats()&gt;&gt;&lt;&lt;/done&gt;&gt;
+
+    &lt;h1&gt;🎵 音樂術語 AI 教練&lt;/h1&gt;
+    &lt;br&gt;
+    &lt;&lt;button &quot;開始學習 10 個名詞&quot;&gt;&gt;
+        &lt;&lt;run setup.fetchWords()&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+
+    &lt;div style=&quot;margin-top: 25px; font-size: 0.9em;&quot;&gt;
+        &lt;&lt;link &quot;🔍 查詢已複習術語庫&quot;&gt;&gt;&lt;&lt;run setup.fetchArchive()&gt;&gt;&lt;&lt;/link&gt;&gt; | 
         [[📖 操作說明|Instructions]]
     &lt;/div&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
-&lt;div class=&quot;progress-text&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
-&lt;div class=&quot;card-content&quot;&gt;
+&lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.8em; color:#666;&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
     &lt;div class=&quot;front-section&quot;&gt;
         &lt;h1 class=&quot;word-title&quot;&gt;$Queue[0].word&lt;/h1&gt;
         &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;&lt;&lt;run setup.speak($Queue[0].word)&gt;&gt;&lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
 
-    &lt;hr class=&quot;tight-hr&quot;&gt;
+    &lt;hr style=&quot;border:0; border-top:1px solid #333; margin:15px 0;&quot;&gt;
 
     &lt;&lt;if $IsFlipped&gt;&gt;
         &lt;div class=&quot;back-section&quot;&gt;
-            &lt;div class=&quot;translation&quot;&gt;$Queue[0].trans&lt;/div&gt;
+            &lt;div class=&quot;translation&quot; style=&quot;color:#ffd700; font-size:2em; font-weight:bold;&quot;&gt;$Queue[0].trans&lt;/div&gt;
             &lt;div class=&quot;notes-box&quot;&gt;
                 &lt;strong&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
                 $Queue[0].notes
+                &lt;div class=&quot;source-info&quot;&gt;
+                    📖 來源：$Queue[0].source (第 $Queue[0].page 頁)
+                &lt;/div&gt;
             &lt;/div&gt;
             &lt;div class=&quot;srs-nav&quot;&gt;
                 &lt;&lt;button &quot;Again [1]&quot; &quot;Flashcard&quot;&gt;&gt;
@@ -659,98 +339,52 @@ $(document).on('keydown', function(ev) {
                     &lt;&lt;run $Queue.shift()&gt;&gt;
                     &lt;&lt;set $FinishedCount += 1&gt;&gt;
                     &lt;&lt;set $IsFlipped to false&gt;&gt;
-                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;
-                        &lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;
-                    &lt;&lt;else&gt;&gt;
-                        &lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;
-                    &lt;&lt;/if&gt;&gt;
+                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;&lt;&lt;/if&gt;&gt;
                 &lt;&lt;/button&gt;&gt;
             &lt;/div&gt;
         &lt;/div&gt;
         &lt;&lt;run setup.speak($Queue[0].word)&gt;&gt;
     &lt;&lt;else&gt;&gt;
-        &lt;div class=&quot;flip-btn-area&quot;&gt;
-            &lt;&lt;button &quot;顯示答案 (空白鍵)&quot;&gt;&gt;
-                &lt;&lt;set $IsFlipped to true&gt;&gt;
-                &lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;
-            &lt;&lt;/button&gt;&gt;
-        &lt;/div&gt;
+        &lt;&lt;button &quot;顯示答案 (空白鍵)&quot;&gt;&gt;&lt;&lt;set $IsFlipped to true&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
     &lt;&lt;/if&gt;&gt;
-&lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="5" name="Instructions" tags="" position="625,375" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;text-align: left;&quot;&gt;
-!! 📖 系統操作說明
-!!! 🧠 記憶演算法 (SRS)
-本系統模擬 Anki 的記憶機制，確保您花時間在最不熟的名詞上：
-*   **Again (按 1)**：完全想不起來。單字會插入在 2 張牌後再次出現，進行強力複習。
-*   **Hard (按 2)**：有點模糊。單字會移到這 10 個名詞的最後面，待會再次確認。
-*   **Easy (按 3)**：已經記住。單字會從本次練習中移除，並記錄到雲端。
-!!! ⌨️ 學霸快捷鍵 (電腦版專用)
-利用鍵盤操作可以大幅提升背誦效率：
+## 📖 系統操作說明
+### 🧠 記憶演算法 (SRS)
+*   **Again (按 1)**：不熟。單字會插入在 2 張牌後再次出現。
+*   **Hard (按 2)**：模糊。單字會移到本輪最後面再次出現。
+*   **Easy (按 3)**：記住。從本輪練習中移除並上傳結果。
+### ⌨️ 學霸快捷鍵
 *   **[空白鍵]**：翻面顯示答案。
-*   **[數字鍵 1]**：對應 **Again**。
-*   **[數字鍵 2]**：對應 **Hard**。
-*   **[數字鍵 3]**：對應 **Easy**。
-&lt;div style=&quot;text-align: center;&quot;&gt;
-    [[我知道了，返回首頁|Introduction]]
-&lt;/div&gt;
+*   **[1, 2, 3]**：對應 Again, Hard, Easy。
+&lt;div style=&quot;text-align: center;&quot;&gt;[[我知道了|Introduction]]&lt;/div&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="6" name="ArchivePage" tags="" position="750,350" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
-    &lt;h2 style=&quot;margin: 0 0 10px 0 !important;&quot;&gt;📚 已複習術語庫&lt;/h2&gt;
-    
-    /* 1. 【核心改動】預設篩選器改為 &quot;unfamiliar&quot; */
+    &lt;h2&gt;📚 已複習術語庫&lt;/h2&gt;
     &lt;&lt;set $ArchiveFilter to &quot;unfamiliar&quot;&gt;&gt;
-
-    /* 2. 篩選按鈕區 */
-    &lt;div id=&quot;archive-filters&quot;&gt;
-        &lt;&lt;include &quot;ArchiveFilter-Buttons&quot;&gt;&gt;
-    &lt;/div&gt;
-
-    /* 3. 列表顯示區域 */
-    &lt;div id=&quot;archive-display&quot; class=&quot;summary-container&quot; style=&quot;max-height: 450px;&quot;&gt;
+    &lt;div id=&quot;archive-filters&quot;&gt;&lt;&lt;include &quot;ArchiveFilter-Buttons&quot;&gt;&gt;&lt;/div&gt;
+    &lt;div id=&quot;archive-display&quot; class=&quot;summary-container&quot; style=&quot;max-height: 400px;&quot;&gt;
         &lt;&lt;include &quot;ArchiveList-Inner&quot;&gt;&gt;
     &lt;/div&gt;
-
-    &lt;div class=&quot;home-link-area&quot;&gt;
-        &lt;br&gt;
-        [[返回首頁|Introduction]]
-    &lt;/div&gt;
+    &lt;br&gt;
+    [[返回首頁|Introduction]]
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="7" name="ArchiveList-Inner" tags="" position="500,375" size="100,100">&lt;&lt;nobr&gt;&gt;
-    /* 【核心邏輯】處理合併篩選 */
     &lt;&lt;set _filtered to $ArchiveList.filter(function(item) {
         if ($ArchiveFilter === &quot;all&quot;) return true;
         if ($ArchiveFilter === &quot;easy&quot;) return item.code === &quot;easy&quot;;
-        /* 如果選 &quot;unfamiliar&quot;，則顯示 code 為 hard 或 again 的項目 */
-        if ($ArchiveFilter === &quot;unfamiliar&quot;) {
-            return item.code === &quot;hard&quot; || item.code === &quot;again&quot;;
-        }
-        return false;
+        return item.code === &quot;hard&quot; || item.code === &quot;again&quot;;
     })&gt;&gt;
-
     &lt;&lt;if _filtered.length == 0&gt;&gt;
-        &lt;div style=&quot;padding:20px; text-align:center; color:#888;&quot;&gt;此類別目前沒有名詞。&lt;/div&gt;
+        &lt;div style=&quot;padding:20px; color:#888;&quot;&gt;此類別目前沒有名詞。&lt;/div&gt;
     &lt;&lt;else&gt;&gt;
-        &lt;p class=&quot;progress-text&quot; style=&quot;text-align:center; margin-top:5px !important;&quot;&gt;
-            &lt;&lt;if $ArchiveFilter === &quot;unfamiliar&quot;&gt;&gt;
-                ⚠️ 待加強名詞：
-            &lt;&lt;elseif $ArchiveFilter === &quot;easy&quot;&gt;&gt;
-                ✅ 已掌握名詞：
-            &lt;&lt;else&gt;&gt;
-                📊 全部練習過：
-            &lt;&lt;/if&gt;&gt;
-            &lt;&lt;print _filtered.length&gt;&gt; 個
-        &lt;/p&gt;
-        
+        &lt;p class=&quot;progress-text&quot; style=&quot;margin-top:5px !important;&quot;&gt;此類別共有 &lt;&lt;print _filtered.length&gt;&gt; 個名詞&lt;/p&gt;
         &lt;&lt;for _item range _filtered&gt;&gt;
             &lt;&lt;capture _item&gt;&gt;
                 &lt;div class=&quot;summary-row&quot;&gt;
-                    &lt;span class=&quot;summary-word&quot;&gt;
-                        _item.word
-                        &lt;span @class=&quot;&#39;status-tag &#39; + _item.code&quot;&gt;_item.status&lt;/span&gt;
-                    &lt;/span&gt;
+                    &lt;span class=&quot;summary-word&quot;&gt;_item.word &lt;span @class=&quot;&#39;status-tag &#39; + _item.code&quot;&gt;_item.status&lt;/span&gt;&lt;/span&gt;
                     &lt;span class=&quot;summary-action&quot;&gt;
-                        &lt;span class=&quot;summary-trans&quot;&gt;_item.trans&lt;/span&gt;
+                        &lt;span style=&quot;font-size:0.8em; color:#666;&quot;&gt;_item.trans&lt;/span&gt;
                         &lt;&lt;button &quot;🔊&quot;&gt;&gt;&lt;&lt;run setup.speak(_item.word)&gt;&gt;&lt;&lt;/button&gt;&gt;
                     &lt;/span&gt;
                 &lt;/div&gt;
@@ -759,43 +393,25 @@ $(document).on('keydown', function(ev) {
     &lt;&lt;/if&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="ArchiveFilter-Buttons" tags="" position="325,150" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;div class=&quot;filter-group&quot;&gt;
-
-    /* --- 按鈕 1：不熟悉 (包含 again 與 hard) --- */
     &lt;&lt;button &quot;不熟悉&quot;&gt;&gt;
         &lt;&lt;set $ArchiveFilter to &quot;unfamiliar&quot;&gt;&gt;
         &lt;&lt;replace &quot;#archive-display&quot;&gt;&gt;&lt;&lt;include &quot;ArchiveList-Inner&quot;&gt;&gt;&lt;&lt;/replace&gt;&gt;
         &lt;&lt;replace &quot;#archive-filters&quot;&gt;&gt;&lt;&lt;include &quot;ArchiveFilter-Buttons&quot;&gt;&gt;&lt;&lt;/replace&gt;&gt;
     &lt;&lt;/button&gt;&gt;
-    &lt;&lt;done&gt;&gt;
-        &lt;&lt;if $ArchiveFilter === &quot;unfamiliar&quot;&gt;&gt;
-            $(&quot;.filter-group button:contains(&#39;不熟悉&#39;)&quot;).addClass(&quot;active-filter&quot;);
-        &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/done&gt;&gt;
-
-    /* --- 按鈕 2：熟悉 (僅包含 easy) --- */
     &lt;&lt;button &quot;熟悉&quot;&gt;&gt;
         &lt;&lt;set $ArchiveFilter to &quot;easy&quot;&gt;&gt;
         &lt;&lt;replace &quot;#archive-display&quot;&gt;&gt;&lt;&lt;include &quot;ArchiveList-Inner&quot;&gt;&gt;&lt;&lt;/replace&gt;&gt;
         &lt;&lt;replace &quot;#archive-filters&quot;&gt;&gt;&lt;&lt;include &quot;ArchiveFilter-Buttons&quot;&gt;&gt;&lt;&lt;/replace&gt;&gt;
     &lt;&lt;/button&gt;&gt;
-    &lt;&lt;done&gt;&gt;
-        &lt;&lt;if $ArchiveFilter === &quot;easy&quot;&gt;&gt;
-            $(&quot;.filter-group button:contains(&#39;熟悉&#39;)&quot;).addClass(&quot;active-filter&quot;);
-        &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/done&gt;&gt;
-
-    /* --- 按鈕 3：全部 (包含所有 code) --- */
     &lt;&lt;button &quot;全部&quot;&gt;&gt;
         &lt;&lt;set $ArchiveFilter to &quot;all&quot;&gt;&gt;
         &lt;&lt;replace &quot;#archive-display&quot;&gt;&gt;&lt;&lt;include &quot;ArchiveList-Inner&quot;&gt;&gt;&lt;&lt;/replace&gt;&gt;
         &lt;&lt;replace &quot;#archive-filters&quot;&gt;&gt;&lt;&lt;include &quot;ArchiveFilter-Buttons&quot;&gt;&gt;&lt;&lt;/replace&gt;&gt;
     &lt;&lt;/button&gt;&gt;
     &lt;&lt;done&gt;&gt;
-        &lt;&lt;if $ArchiveFilter === &quot;all&quot;&gt;&gt;
-            $(&quot;.filter-group button:contains(&#39;全部&#39;)&quot;).addClass(&quot;active-filter&quot;);
-        &lt;&lt;/if&gt;&gt;
+        var target = ($ArchiveFilter === &quot;unfamiliar&quot;) ? &quot;不熟悉&quot; : ($ArchiveFilter === &quot;easy&quot;) ? &quot;熟悉&quot; : &quot;全部&quot;;
+        $(&quot;.filter-group button:contains(&#39;&quot; + target + &quot;&#39;)&quot;).addClass(&quot;active-filter&quot;);
     &lt;&lt;/done&gt;&gt;
-
 &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
