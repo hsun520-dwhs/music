@@ -275,6 +275,15 @@ setup.speak = function(text) {
     msg.rate = 0.85;
     window.speechSynthesis.speak(msg);
 };
+setup.fetchArchive = function() {
+    // 顯示載入中狀態
+    $('#stats-area').html('<div class="stats-loading">正在從雲端提取完整庫...</div>');
+    
+    setup.callGAS({ action: "getArchive" }, function(data) {
+        State.variables.ArchiveList = data;
+        Engine.play("ArchivePage");
+    });
+};
 
 // --- 4. 快捷鍵 ---
 $(document).on('keydown', function(ev) {
