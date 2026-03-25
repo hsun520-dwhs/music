@@ -322,17 +322,18 @@ $(document).on('keydown', function(ev) {
             
             &lt;&lt;capture _i, _word, _trans, _code&gt;&gt;
                 &lt;div class=&quot;summary-row&quot; style=&quot;padding: 10px 15px; border-bottom: 1px solid #222;&quot;&gt;
-                    &lt;span @id=&quot;&#39;area-&#39; + _i&quot; class=&quot;summary-word&quot;&gt;
-                        &lt;&lt;link _word&gt;&gt;
-                            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-                                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
-                            &lt;/replace&gt;&gt;
-                        &lt;&lt;/link&gt;&gt;
-                    &lt;/span&gt;
-                    &lt;span class=&quot;summary-action&quot;&gt;
-                        &lt;&lt;button &quot;🔊&quot;&gt;&gt; &lt;&lt;run setup.speak(_word)&gt;&gt; &lt;&lt;/button&gt;&gt;
-                    &lt;/span&gt;
-                &lt;/div&gt;
+    &lt;span @id=&quot;&#39;area-&#39; + _i&quot; class=&quot;summary-word&quot;&gt;
+        &lt;&lt;link _word&gt;&gt;
+            /* 確保這裡使用反引號處理變數運算 */
+            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
+            &lt;&lt;/replace&gt;&gt;
+        &lt;&lt;/link&gt;&gt;
+    &lt;/span&gt;
+    &lt;span class=&quot;summary-action&quot;&gt;
+        &lt;&lt;button &quot;🔊&quot;&gt;&gt; &lt;&lt;run setup.speak(_word)&gt;&gt; &lt;&lt;/button&gt;&gt;
+    &lt;/span&gt;
+&lt;/div&gt;
             &lt;&lt;/capture&gt;&gt;
         &lt;&lt;/for&gt;&gt;
     &lt;/div&gt;
@@ -476,11 +477,13 @@ $(document).on('keydown', function(ev) {
     &lt;&lt;/done&gt;&gt;
 &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="Toggle-Word-Info" tags="" position="250,300" size="100,100">&lt;&lt;nobr&gt;&gt;
-/* 展開後的內容 */
+/* 1. 這裡改成顯示「展開後的資訊」 */
+/* 2. 這裡的 link 指向一個「收合」的動作，再次 replace 回去 */
 &lt;&lt;link _word&gt;&gt;
-    &lt;&lt;replace &quot;&#39;#area-&#39; + _word&quot;&gt;&gt;
+    &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+        /* 這裡點擊後，換回原本只有單字的狀態 */
         &lt;&lt;link _word&gt;&gt;
-            &lt;&lt;replace &quot;&#39;#area-&#39; + _word&quot;&gt;&gt;
+            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
                 &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
             &lt;&lt;/replace&gt;&gt;
         &lt;&lt;/link&gt;&gt;
