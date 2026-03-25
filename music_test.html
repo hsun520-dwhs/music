@@ -477,21 +477,20 @@ $(document).on('keydown', function(ev) {
     &lt;&lt;/done&gt;&gt;
 &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="Toggle-Word-Info" tags="" position="250,300" size="100,100">&lt;&lt;nobr&gt;&gt;
-/* 1. 這裡改成顯示「展開後的資訊」 */
-/* 2. 這裡的 link 指向一個「收合」的動作，再次 replace 回去 */
+/* 點擊展開後的文字：顯示單字與翻譯 */
 &lt;&lt;link _word&gt;&gt;
-    &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-        /* 這裡點擊後，換回原本只有單字的狀態 */
-        &lt;&lt;link _word&gt;&gt;
-            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
-            &lt;&lt;/replace&gt;&gt;
-        &lt;&lt;/link&gt;&gt;
-    &lt;&lt;/replace&gt;&gt;
+	/* 注意這裡使用反引號 ` 以及變數 _i */
+	&lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+		&lt;&lt;link _word&gt;&gt;
+			&lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+				&lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
+			&lt;&lt;/replace&gt;&gt;
+		&lt;&lt;/link&gt;&gt;
+	&lt;&lt;/replace&gt;&gt;
 &lt;&lt;/link&gt;&gt;: 
 &lt;span style=&quot;color:#ffd700; margin-left:5px;&quot;&gt;_trans&lt;/span&gt;
 &lt;span style=&quot;margin-left:10px; color:#00ffcc; font-family:monospace; background:#000; padding:2px 8px; border-radius:4px; border:1px solid #333; font-size:0.9em;&quot;&gt;
-    _code
+	_code
 &lt;/span&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
