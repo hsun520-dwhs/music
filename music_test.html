@@ -298,22 +298,22 @@ $(document).on('keydown', function(ev) {
     &lt;h2 style=&quot;margin-bottom:10px !important;&quot;&gt;🎉 練習完成！&lt;/h2&gt;
     &lt;p class=&quot;stats-sub&quot;&gt;完成時間：&lt;&lt;print new Date().toLocaleString()&gt;&gt;&lt;/p&gt;
 
-    &lt;!-- 1. 更新後的提示文字 --&gt;
+    &lt;!-- 提示與說明區 --&gt;
     &lt;p style=&quot;font-size:0.85em; color:#00ffcc; margin-top:15px; margin-bottom:10px; font-weight:bold;&quot;&gt;
-        💡 提示：點擊下方單字，可顯示中文與點擊歷程(再按一次可縮回)
+        💡 提示：點擊下方單字，可顯示中文與點擊歷程 (再按一次可縮回)
     &lt;/p&gt;
 
-    &lt;!-- 2. 符號說明區 --&gt;
     &lt;div style=&quot;font-size:0.75em; color:#bbb; background:#222; padding:10px; border-radius:8px; margin-bottom:15px; text-align:left; border-left: 3px solid #ffd700;&quot;&gt;
-        &lt;strong&gt;📊 符號說明：&lt;/strong&gt;&lt;br&gt;
+        &lt;strong&gt;📊 歷程符號說明：&lt;/strong&gt;&lt;br&gt;
         &lt;span style=&quot;color:#ff6666;&quot;&gt;A&lt;/span&gt;: Again (不熟) | 
         &lt;span style=&quot;color:#ffcc00;&quot;&gt;H&lt;/span&gt;: Hard (模糊) | 
         &lt;span style=&quot;color:#00ffcc;&quot;&gt;E&lt;/span&gt;: Easy (已記住)&lt;br&gt;
         &lt;hr style=&quot;border:0; border-top:1px solid #444; margin:5px 0;&quot;&gt;
-        &lt;span style=&quot;color:#8af;&quot;&gt;註：歷程顯示「累計次數」，非按鍵先後順序。&lt;/span&gt;
+        &lt;span style=&quot;color:#8af;&quot;&gt;註：歷程顯示該輪「按鍵次數」，例如 A2 代表按過兩次不熟。&lt;/span&gt;
     &lt;/div&gt;
     
-    &lt;div class=&quot;summary-container&quot; style=&quot;max-height: 400px; border: 1px solid #444;&quot;&gt;
+    &lt;!-- 單字列表區 --&gt;
+    &lt;div class=&quot;summary-container&quot; style=&quot;max-height: 400px; border: 1px solid #444; overflow-y: auto;&quot;&gt;
         &lt;&lt;for _i, _item range $SessionList&gt;&gt;
             &lt;&lt;set _word to _item.word&gt;&gt;
             &lt;&lt;set _trans to _item.trans&gt;&gt;
@@ -321,28 +321,29 @@ $(document).on('keydown', function(ev) {
             &lt;&lt;set _code to setup.getJourneyCode(_history)&gt;&gt;
             
             &lt;&lt;capture _i, _word, _trans, _code&gt;&gt;
-                &lt;div class=&quot;summary-row&quot; style=&quot;padding: 10px 15px; border-bottom: 1px solid #222;&quot;&gt;
-    &lt;span @id=&quot;&#39;area-&#39; + _i&quot; class=&quot;summary-word&quot;&gt;
-        &lt;&lt;link _word&gt;&gt;
-            /* 確保這裡使用反引號處理變數運算 */
-            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
-            &lt;&lt;/replace&gt;&gt;
-        &lt;&lt;/link&gt;&gt;
-    &lt;/span&gt;
-    &lt;span class=&quot;summary-action&quot;&gt;
-        &lt;&lt;button &quot;🔊&quot;&gt;&gt; &lt;&lt;run setup.speak(_word)&gt;&gt; &lt;&lt;/button&gt;&gt;
-    &lt;/span&gt;
-&lt;/div&gt;
+                &lt;div class=&quot;summary-row&quot; style=&quot;padding: 10px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center;&quot;&gt;
+                    &lt;span @id=&quot;&#39;area-&#39; + _i&quot; class=&quot;summary-word&quot;&gt;
+                        &lt;&lt;link _word&gt;&gt;
+                            /* 這裡使用反引號確保動態 ID area-0, area-1... 被正確計算 */
+                            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+                                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
+                            &lt;&lt;/replace&gt;&gt;
+                        &lt;&lt;/link&gt;&gt;
+                    &lt;/span&gt;
+                    &lt;span class=&quot;summary-action&quot;&gt;
+                        &lt;&lt;button &quot;🔊&quot;&gt;&gt; &lt;&lt;run setup.speak(_word)&gt;&gt; &lt;&lt;/button&gt;&gt;
+                    &lt;/span&gt;
+                &lt;/div&gt;
             &lt;&lt;/capture&gt;&gt;
         &lt;&lt;/for&gt;&gt;
     &lt;/div&gt;
 
-    /* 自動上傳雲端 */
+    /* 自動將本輪結果上傳雲端試算表 */
     &lt;&lt;run setup.uploadSession()&gt;&gt;
 
+    &lt;!-- 底部按鈕區 --&gt;
     &lt;div style=&quot;margin-top:20px;&quot;&gt;
-        &lt;&lt;button &quot;再背 10 個名詞&quot;&gt;&gt;
+        &lt;&lt;button &quot;再練習 10 個名詞&quot;&gt;&gt;
             &lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;
             &lt;&lt;run setup.fetchWords()&gt;&gt;
         &lt;&lt;/button&gt;&gt;
@@ -477,20 +478,20 @@ $(document).on('keydown', function(ev) {
     &lt;&lt;/done&gt;&gt;
 &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="Toggle-Word-Info" tags="" position="250,300" size="100,100">&lt;&lt;nobr&gt;&gt;
-/* 點擊展開後的文字：顯示單字與翻譯 */
+/* 這是點擊展開後的狀態 */
 &lt;&lt;link _word&gt;&gt;
-	/* 注意這裡使用反引號 ` 以及變數 _i */
-	&lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-		&lt;&lt;link _word&gt;&gt;
-			&lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-				&lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
-			&lt;&lt;/replace&gt;&gt;
-		&lt;&lt;/link&gt;&gt;
-	&lt;&lt;/replace&gt;&gt;
+    &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+        /* 點擊後，replace 回原本只有 Link 的狀態，實現收合 */
+        &lt;&lt;link _word&gt;&gt;
+            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
+                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
+            &lt;&lt;/replace&gt;&gt;
+        &lt;&lt;/link&gt;&gt;
+    &lt;&lt;/replace&gt;&gt;
 &lt;&lt;/link&gt;&gt;: 
 &lt;span style=&quot;color:#ffd700; margin-left:5px;&quot;&gt;_trans&lt;/span&gt;
 &lt;span style=&quot;margin-left:10px; color:#00ffcc; font-family:monospace; background:#000; padding:2px 8px; border-radius:4px; border:1px solid #333; font-size:0.9em;&quot;&gt;
-	_code
+    _code
 &lt;/span&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
