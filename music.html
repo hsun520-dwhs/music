@@ -173,22 +173,77 @@ body {
 .status-tag { font-size: 0.6em; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
 .status-tag.easy { background: #262; }
 .status-tag.hard { background: #660; }
-.status-tag.again { background: #822; }</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
+.status-tag.again { background: #822; }
+/* 發音規則提示框 */
+.pronunciation-box {
+    background: #1a2233;
+    padding: 12px 15px;
+    margin: 10px 0 !important;
+    text-align: left;
+    border-radius: 6px;
+    border-left: 4px solid #4a90e2;
+    font-size: 0.9em;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+.pronunciation-box ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+}
+.pronunciation-box li {
+    margin-bottom: 4px;
+}
+.pronunciation-box b {
+    color: #61dafb; /* 凸顯字母 */
+}
+/* 動態發音規則提示框 (藍色框框) */
+.pronunciation-box {
+    background: #1a2233;
+    padding: 12px 15px;
+    margin: 10px 0 !important;
+    text-align: left;
+    border-radius: 6px;
+    border-left: 4px solid #4a90e2;
+    font-size: 0.9em;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+.pronunciation-box ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+}
+.pronunciation-box li {
+    margin-bottom: 4px;
+}
+.pronunciation-box b {
+    color: #61dafb; /* 凸顯字母顏色，看起來更清楚 */
+}
+/* 迷你發音按鈕 (用於發音規則的小例子) */
+button.mini-audio-btn {
+    background: transparent !important;
+    border: 1px solid #4a90e2 !important;
+    color: #4a90e2 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 0.8em !important;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+button.mini-audio-btn:hover {
+    background: #4a90e2 !important;
+    color: #fff !important;
+}
+</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
 setup.gasUrl = "https://script.google.com/macros/s/AKfycbz-pkYUO0evDpate7IjN4cedYqX_xABUwcanLMmvz_DZBGS2ELaeb3Bn_yPjONb_DO05Q/exec";
 
+// 偵測網址是否包含 dev=1，如果是，代表是老師/開發者
+setup.isDev = window.location.href.includes("dev=1");
 // --- 2. 狀態判定邏輯 (核心演算法) ---
-// 此函式用於判定單字目前的記憶等級：新、熟悉、不熟、模糊
 setup.determineStatus = function(a, h, pts, e) {
-    // 1. 全新：所有紀錄皆為 0
     if (a === 0 && h === 0 && e === 0 && pts === 0) return "新";
-    
-    // 2. 處理舊資料補償：若有舊的 Easy 次數 (e) 但無積分 (pts)，按每個 3 分換算
     var baseSubtract = (pts === 0 && e > 0) ? (e * 3) : pts;
-    
-    // 3. 計算負擔分數
     var score = (a * 5) + (h * 2) - baseSubtract;
-
-    // 4. 分類判定
     if (score <= 0 && (e > 0 || pts > 0)) return "熟悉";
     if (score >= 5) return "不熟";
     return "模糊";
@@ -236,12 +291,11 @@ setup.fetchStats = function() {
     });
 };
 
-// B. 提取 10 個名詞，並紀錄練習前的狀態 baseline
+// B. 提取 10 個名詞
 setup.fetchWords = function() {
     $('#stats-area').html('<div class="stats-loading">正在提取 10 個名詞...</div>');
     setup.callGAS({ action: "getWords" }, function(data) {
         State.variables.Queue = data.map(function(item) {
-            // 在每個單字進入 Queue 之前，先判定並存下它的「起始狀態」
             item.startStatus = setup.determineStatus(item.initA, item.initH, item.initPts, item.initE || 0);
             return item;
         });
@@ -253,15 +307,24 @@ setup.fetchWords = function() {
     });
 };
 
-// C. 紀錄單次點擊結果
+// C. 紀錄單次點擊結果 (加入測試模式攔截)
 setup.logResult = function(word, result) {
-    setup.callGAS({ action: "log", word: word, result: result });
+    // 檢查是否為測試模式
+    if (State.variables.testMode) {
+        console.log("[測試模式] 假裝寫入成績: " + word + " -> " + result);
+    } else {
+        // 真實模式才呼叫 Google Sheet
+        setup.callGAS({ action: "log", word: word, result: result });
+    }
+    
+    // 本機端的歷程紀錄還是要留著，這樣結算頁面才算得出東西
     if (!State.variables.CurrentSessionJourney) State.variables.CurrentSessionJourney = {};
     if (!State.variables.CurrentSessionJourney[word]) State.variables.CurrentSessionJourney[word] = [];
     State.variables.CurrentSessionJourney[word].push(result);
 };
 
-// D. 轉換歷程為代碼 (如 A2➔H0➔E1)
+
+// D. 轉換歷程為代碼
 setup.getJourneyCode = function(historyArray) {
     if (!historyArray) return "無紀錄";
     var counts = { "Again": 0, "Hard": 0, "Easy": 0 };
@@ -269,8 +332,13 @@ setup.getJourneyCode = function(historyArray) {
     return "A" + counts["Again"] + "➔H" + counts["Hard"] + "➔E" + counts["Easy"];
 };
 
-// E. 上傳整輪練習摘要
+// E. 上傳整輪練習摘要 (加入測試模式攔截)
 setup.uploadSession = function() {
+    if (State.variables.testMode) {
+        console.log("[測試模式] 假裝上傳整輪摘要，不執行雲端寫入。");
+        return; // 直接中斷，不往下執行
+    }
+
     var journeyData = State.variables.CurrentSessionJourney;
     var wordList = State.variables.SessionList.map(item => item.word).join(", ");
     var journeySummary = "";
@@ -281,17 +349,61 @@ setup.uploadSession = function() {
     setup.callGAS({ action: "saveSession", wordList: wordList, journey: journeySummary });
 };
 
-// F. 語音合成 (TTS)
-setup.speak = function(text) {
+// F. 語音合成 (TTS) - *** 更新版 ***
+setup.speak = function(text, lang) {
     if (!text) return;
     window.speechSynthesis.cancel();
     var msg = new SpeechSynthesisUtterance(text);
-    msg.lang = 'en-US';
+    // 使用傳入的 lang，如果沒有則預設為義大利文 'it-IT'
+    msg.lang = lang || 'it-IT'; 
     msg.rate = 0.85;
     window.speechSynthesis.speak(msg);
 };
 
-// G. 抓取封存庫
+// G. 語文代碼轉名稱 (簡稱版)
+setup.getLangName = function(code) {
+    if (!code) return ""; // 如果沒填代碼，就不顯示
+
+    // 1. 完整代碼對應表 (包含常見的錯誤打法)
+    var langMap = {
+        'it-IT': '義',
+        'de-DE': '德',
+        'fr-FR': '法',
+        'en-US': '英',
+        'en-GB': '英',
+        'en-EN': '英', // 容錯
+        'ja-JP': '日',
+        'jp-JP': '日', // 容錯
+        'zh-TW': '中',
+        'zh-CN': '中',
+        'es-ES': '西',
+        'ru-RU': '俄'
+    };
+    
+    // 如果有完全符合的，直接回傳
+    if (langMap[code]) {
+        return langMap[code];
+    }
+
+    // 2. 容錯機制：只看前兩個字母 (例如把 'ja-JP' 切成 'ja')
+    var shortCode = code.split('-')[0].toLowerCase();
+    var shortMap = {
+        'it': '義',
+        'de': '德',
+        'fr': '法',
+        'en': '英',
+        'ja': '日',
+        'jp': '日', // 容錯
+        'zh': '中',
+        'es': '西',
+        'ru': '俄'
+    };
+    
+    // 如果前兩個字母有符合就回傳，真的都找不到才顯示原始代碼
+    return shortMap[shortCode] || code; 
+};
+
+// H. 抓取封存庫
 setup.fetchArchive = function() {
     $('#stats-area').html('<div class="stats-loading">正在提取完整庫...</div>');
     setup.callGAS({ action: "getArchive" }, function(data) {
@@ -299,6 +411,7 @@ setup.fetchArchive = function() {
         Engine.play("ArchivePage");
     });
 };
+
 
 // --- 5. 鍵盤快捷鍵設定 ---
 $(document).on('keydown', function(ev) {
@@ -315,46 +428,47 @@ $(document).on('keydown', function(ev) {
     }
 });
 setup.testFinishPage = function() {
-    // 1. 定義隨機術語池 (可自行增減)
-    var musicTerms = [
-        {w: "Allegro", t: "快速的"}, {w: "Adagio", t: "慢板"}, 
-        {w: "Crescendo", t: "漸強"}, {w: "Staccato", t: "斷奏"},
-        {w: "Andante", t: "行板"}, {w: "Vivace", t: "活潑地"},
-        {w: "Forte", t: "強"}, {w: "Piano", t: "弱"},
-        {w: "Legato", t: "連奏"}, {w: "Presto", t: "急板"},
-        {w: "Largo", t: "最緩板"}, {w: "Moderato", t: "中板"},
-        {w: "Ritardando", t: "漸慢"}, {w: "Mezzo Forte", t: "中強"},
-        {w: "Pianissimo", t: "極弱"}
-    ];
+    // ... (測試函式不變) ...
+};
+// I. 動態發音規則提示 (針對只懂英文的學生設計)
+setup.getPronunciationRules = function(code) {
+    if (!code) return "";
+    var shortCode = code.split('-')[0].toLowerCase();
 
-    // 2. 隨機洗牌並取出前 5 個
-    var shuffledPool = musicTerms.sort(function() { return 0.5 - Math.random(); });
-    var p = shuffledPool.slice(0, 5);
-
-    // 3. 模擬本輪練習的單字列表 (將隨機選中的字分配到不同狀態)
-    State.variables.SessionList = [
-        { word: p[0].w, trans: p[0].t, initA: 0, initH: 0, initPts: 0, initE: 0, initStreak: 0, startStatus: "新" },
-        { word: p[1].w, trans: p[1].t, initA: 0, initH: 1, initPts: 0, initE: 0, initStreak: 0, startStatus: "模糊" },
-        { word: p[2].w, trans: p[2].t, initA: 0, initH: 1, initPts: 1, initE: 1, initStreak: 1, startStatus: "模糊" },
-        { word: p[3].w, trans: p[3].t, initA: 1, initH: 0, initPts: 0, initE: 0, initStreak: 0, startStatus: "不熟" },
-        { word: p[4].w, trans: p[4].t, initA: 0, initH: 0, initPts: 10, initE: 5, initStreak: 3, startStatus: "熟悉" }
-    ];
-
-    // 4. 模擬使用者的點擊歷程 (對應剛剛隨機選的字)
-    State.variables.CurrentSessionJourney = {};
-    State.variables.CurrentSessionJourney[p[0].w] = ["Easy"];
-    State.variables.CurrentSessionJourney[p[1].w] = ["Again"];
-    State.variables.CurrentSessionJourney[p[2].w] = ["Easy", "Easy"];
-    State.variables.CurrentSessionJourney[p[3].w] = ["Easy", "Easy", "Easy"];
-    State.variables.CurrentSessionJourney[p[4].w] = ["Easy"];
-
-    // 5. 跳轉到結算頁面
-    Engine.play("FinishPage");
+    switch(shortCode) {
+        case 'it': // 義大利文 (音樂術語最大宗)
+            return "<ul>" +
+                   "<li><b>c</b> 在 e, i 前發 <b>/ch/ (切)</b> ➡️ 例: <i>Cello</i></li>" +
+                   "<li><b>ch</b> 永遠發 <b>/k/ (克)</b> ➡️ 例: <i>Scherzo</i></li>" +
+                   "<li><b>g</b> 在 e, i 前發 <b>/j/ (吉)</b> ➡️ 例: <i>Adagio</i></li>" +
+                   "<li><b>zz</b> 發 <b>/ts/ (次)</b> ➡️ 例: <i>Pizzicato</i></li>" +
+                   "<li>母音很單純：<b>a</b>(啊), <b>e</b>(ㄝ), <b>i</b>(依), <b>o</b>(喔), <b>u</b>(嗚)</li>" +
+                   "</ul>";
+        case 'de': // 德文
+            return "<ul>" +
+                   "<li><b>w</b> 發英文的 <b>/v/</b> ➡️ 例: <i>Wagner</i></li>" +
+                   "<li><b>v</b> 發英文的 <b>/f/</b> ➡️ 例: <i>von</i></li>" +
+                   "<li><b>j</b> 發英文的 <b>/y/ (耶)</b> ➡️ 例: <i>Johann</i></li>" +
+                   "<li><b>z</b> 發 <b>/ts/ (次)</b> ➡️ 例: <i>Mozart</i></li>" +
+                   "<li><b>ie</b> 發長音 <b>/ee/ (依)</b> ➡️ 例: <i>Lied</i></li>" +
+                   "<li><b>ei</b> 發 <b>/eye/ (哎)</b> ➡️ 例: <i>Zeit</i></li>" +
+                   "</ul>";
+        case 'fr': // 法文
+            return "<ul>" +
+                   "<li><b>字尾的子音</b> 通常不發音 ➡️ 例: <i>Ballet</i></li>" +
+                   "<li><b>ch</b> 發英文的 <b>/sh/ (噓)</b> ➡️ 例: <i>Chanson</i></li>" +
+                   "<li><b>ou</b> 發 <b>/oo/ (嗚)</b> ➡️ 例: <i>Doux</i></li>" +
+                   "<li><b>eau / au</b> 發 <b>/o/ (喔)</b> ➡️ 例: <i>Morceau</i></li>" +
+                   "</ul>";
+        default:
+            return ""; // 英文或其他語言不需要特別提示
+    }
 };</script><tw-passagedata pid="1" name="StoryInit" tags="" position="475,100" size="100,100">&lt;&lt;set $Queue to []&gt;&gt;
 &lt;&lt;set $IsFlipped to false&gt;&gt;
 &lt;&lt;set $FinishedCount to 0&gt;&gt;
 &lt;&lt;set $TotalInSession to 0&gt;&gt;
-&lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;
+&lt;&lt;set $testMode to false&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
     &lt;h2 style=&quot;margin-bottom:10px !important;&quot;&gt;🎉 練習完成！&lt;/h2&gt;
     &lt;p class=&quot;stats-sub&quot;&gt;完成時間：&lt;&lt;print new Date().toLocaleString()&gt;&gt;&lt;/p&gt;
@@ -408,7 +522,7 @@ setup.testFinishPage = function() {
         &lt;&lt;/if&gt;&gt;
     &lt;&lt;/for&gt;&gt;
 
-    &lt;!-- 1. 變化摘要區 (你截圖的部分) --&gt;
+    &lt;!-- 1. 變化摘要區 --&gt;
     &lt;div style=&quot;text-align:left; background:#222; padding:15px; border-radius:12px; margin:15px 0; border: 1px solid #444;&quot;&gt;
         &lt;strong style=&quot;color:#00ffcc; font-size:1.1em;&quot;&gt;📊 本輪記憶程度變化：&lt;/strong&gt;
         &lt;hr style=&quot;border-color:#333; margin:10px 0;&quot;&gt;
@@ -422,7 +536,7 @@ setup.testFinishPage = function() {
         &lt;&lt;/for&gt;&gt;
     &lt;/div&gt;
 
-    &lt;!-- 2. 詳細單字複習清單 (帶發音與中文) --&gt;
+    &lt;!-- 2. 詳細單字複習清單 --&gt;
     &lt;div style=&quot;font-size:0.85em; color:#8af; margin: 20px 0 10px 0; text-align:left;&quot;&gt;
         💡 點擊下方單字可查看釋義與詳細歷程：
     &lt;/div&gt;
@@ -431,10 +545,11 @@ setup.testFinishPage = function() {
         &lt;&lt;for _i, _item range $SessionList&gt;&gt;
             &lt;&lt;set _word to _item.word&gt;&gt;
             &lt;&lt;set _trans to _item.trans&gt;&gt;
+            &lt;&lt;set _lang to _item.lang&gt;&gt;
             &lt;&lt;set _history to $CurrentSessionJourney[_word]&gt;&gt;
             &lt;&lt;set _code to setup.getJourneyCode(_history)&gt;&gt;
             
-            &lt;&lt;capture _i, _word, _trans, _code&gt;&gt;
+            &lt;&lt;capture _i, _word, _trans, _lang, _code&gt;&gt;
                 &lt;div class=&quot;summary-row&quot; style=&quot;padding: 8px 12px; border-bottom: 1px solid #222;&quot;&gt;
                     &lt;span @id=&quot;&#39;area-&#39; + _i&quot; class=&quot;summary-word&quot;&gt;
                         &lt;&lt;link _word&gt;&gt;
@@ -444,7 +559,10 @@ setup.testFinishPage = function() {
                         &lt;&lt;/link&gt;&gt;
                     &lt;/span&gt;
                     &lt;span class=&quot;summary-action&quot;&gt;
-                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;&lt;&lt;run setup.speak(_word)&gt;&gt;&lt;&lt;/button&gt;&gt;
+                        &lt;span style=&quot;font-size:0.8em; color:#888; margin-right:5px;&quot;&gt;(&lt;&lt;print setup.getLangName(_lang)&gt;&gt;)&lt;/span&gt;
+                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;
+                            &lt;&lt;run setup.speak(_word, _lang)&gt;&gt;
+                        &lt;&lt;/button&gt;&gt;
                     &lt;/span&gt;
                 &lt;/div&gt;
             &lt;&lt;/capture&gt;&gt;
@@ -468,7 +586,19 @@ setup.testFinishPage = function() {
     &lt;&lt;done&gt;&gt;&lt;&lt;run setup.fetchStats()&gt;&gt;&lt;&lt;/done&gt;&gt;
 
     &lt;h1&gt;🎵 音樂術語 AI 教練&lt;/h1&gt;
-    &lt;br&gt;
+    
+    &lt;!-- ★★★ 只有網址包含 dev=1 才會顯示這塊 ★★★ --&gt;
+    &lt;&lt;if setup.isDev&gt;&gt;
+        &lt;div style=&quot;margin: 15px 0; padding: 10px; background: #222; border-radius: 8px; border: 1px solid #444; font-size: 0.9em; text-align: left;&quot;&gt;
+            &lt;label style=&quot;cursor: pointer; color: #ffaa00;&quot;&gt;
+                &lt;&lt;checkbox &quot;$testMode&quot; false true&gt;&gt; 🛠️ 開啟「測試模式」
+            &lt;/label&gt;
+            &lt;div style=&quot;color: #888; font-size: 0.85em; margin-top: 5px; margin-left: 25px;&quot;&gt;
+                (打勾後不寫入 Google Sheet，僅供老師測試)
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;&lt;/if&gt;&gt;
+
     &lt;&lt;button &quot;開始學習 10 個名詞&quot;&gt;&gt;
         &lt;&lt;run setup.fetchWords()&gt;&gt;
     &lt;&lt;/button&gt;&gt;
@@ -478,23 +608,42 @@ setup.testFinishPage = function() {
         [[📖 操作說明|Instructions]]
     &lt;/div&gt;
 &lt;/div&gt;
+
+&lt;!-- ★★★ 最下方的直接跳轉測試，也一併隱藏起來 ★★★ --&gt;
+&lt;&lt;if setup.isDev&gt;&gt;
 &lt;div style=&quot;margin-top: 50px; opacity: 0.3;&quot;&gt;
     &lt;&lt;link &quot;🛠️ 開發者測試：直接跳轉結算頁&quot;&gt;&gt;
         &lt;&lt;run setup.testFinishPage()&gt;&gt;
     &lt;&lt;/link&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;/div&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
 &lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.8em; color:#666;&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
+    
+    &lt;!-- 卡片正面 (問題區) --&gt;
     &lt;div class=&quot;front-section&quot;&gt;
-        &lt;h1 class=&quot;word-title&quot;&gt;$Queue[0].word&lt;/h1&gt;
-        &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;&lt;&lt;run setup.speak($Queue[0].word)&gt;&gt;&lt;&lt;/button&gt;&gt;
+        &lt;h1 class=&quot;word-title&quot;&gt;
+            $Queue[0].word
+        &lt;/h1&gt;
+        &lt;div style=&quot;font-size: 1.2em; color: #888; margin-bottom: 20px;&quot;&gt;
+            (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)
+        &lt;/div&gt;
+        &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;
+            &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
 
     &lt;hr style=&quot;border:0; border-top:1px solid #333; margin:15px 0;&quot;&gt;
 
+    &lt;!-- 判斷是否翻面 --&gt;
     &lt;&lt;if $IsFlipped&gt;&gt;
+        
+        &lt;!-- 卡片背面 (解答區) --&gt;
         &lt;div class=&quot;back-section&quot;&gt;
-            &lt;div class=&quot;translation&quot; style=&quot;color:#ffd700; font-size:2em; font-weight:bold;&quot;&gt;$Queue[0].trans&lt;/div&gt;
+            &lt;div class=&quot;translation&quot; style=&quot;color:#ffd700; font-size:2em; font-weight:bold;&quot;&gt;
+                $Queue[0].trans
+            &lt;/div&gt;
+            
             &lt;div class=&quot;notes-box&quot;&gt;
                 &lt;strong&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
                 $Queue[0].notes
@@ -502,7 +651,53 @@ setup.testFinishPage = function() {
                     📖 來源：$Queue[0].source (第 $Queue[0].page 頁)
                 &lt;/div&gt;
             &lt;/div&gt;
-            &lt;div class=&quot;srs-nav&quot;&gt;
+
+           &lt;!-- ★★★ 終極發音規則提示區 (內建迷你發音按鈕) ★★★ --&gt;
+            &lt;&lt;set _langCode to $Queue[0].lang.toLowerCase()&gt;&gt;
+            
+            &lt;!-- 加上了 es 和 西 的判斷 --&gt;
+            &lt;&lt;if _langCode.includes(&quot;it&quot;) or _langCode.includes(&quot;義&quot;) or _langCode.includes(&quot;de&quot;) or _langCode.includes(&quot;德&quot;) or _langCode.includes(&quot;fr&quot;) or _langCode.includes(&quot;法&quot;) or _langCode.includes(&quot;es&quot;) or _langCode.includes(&quot;西&quot;)&gt;&gt;
+                &lt;div class=&quot;pronunciation-box&quot;&gt;
+                    &lt;strong style=&quot;color:#fff;&quot;&gt;🗣️ 拼寫與發音小秘訣 (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)：&lt;/strong&gt;
+                    
+                    &lt;&lt;if _langCode.includes(&quot;it&quot;) or _langCode.includes(&quot;義&quot;)&gt;&gt;
+                        &lt;ul&gt;
+                            &lt;li&gt;&lt;b&gt;c&lt;/b&gt; 在 e, i 前發 &lt;b&gt;/ch/ (切)&lt;/b&gt; ➡️ 例: &lt;i&gt;Cello&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Cello&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ch&lt;/b&gt; 永遠發 &lt;b&gt;/k/ (克)&lt;/b&gt; ➡️ 例: &lt;i&gt;Scherzo&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Scherzo&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;g&lt;/b&gt; 在 e, i 前發 &lt;b&gt;/j/ (吉)&lt;/b&gt; ➡️ 例: &lt;i&gt;Adagio&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Adagio&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;zz&lt;/b&gt; 發 &lt;b&gt;/ts/ (次)&lt;/b&gt; ➡️ 例: &lt;i&gt;Pizzicato&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Pizzicato&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;母音很單純：&lt;b&gt;a&lt;/b&gt;(啊), &lt;b&gt;e&lt;/b&gt;(ㄝ), &lt;b&gt;i&lt;/b&gt;(依), &lt;b&gt;o&lt;/b&gt;(喔), &lt;b&gt;u&lt;/b&gt;(嗚)&lt;/li&gt;
+                        &lt;/ul&gt;
+                    &lt;&lt;elseif _langCode.includes(&quot;de&quot;) or _langCode.includes(&quot;德&quot;)&gt;&gt;
+                        &lt;ul&gt;
+                            &lt;li&gt;&lt;b&gt;w&lt;/b&gt; 發英文的 &lt;b&gt;/v/&lt;/b&gt; ➡️ 例: &lt;i&gt;Wagner&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Wagner&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;v&lt;/b&gt; 發英文的 &lt;b&gt;/f/&lt;/b&gt; ➡️ 例: &lt;i&gt;von&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;von&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;j&lt;/b&gt; 發英文的 &lt;b&gt;/y/ (耶)&lt;/b&gt; ➡️ 例: &lt;i&gt;Johann&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Johann&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;z&lt;/b&gt; 發 &lt;b&gt;/ts/ (次)&lt;/b&gt; ➡️ 例: &lt;i&gt;Mozart&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Mozart&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ie&lt;/b&gt; 發長音 &lt;b&gt;/ee/ (依)&lt;/b&gt; ➡️ 例: &lt;i&gt;Lied&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Lied&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ei&lt;/b&gt; 發 &lt;b&gt;/eye/ (哎)&lt;/b&gt; ➡️ 例: &lt;i&gt;Zeit&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Zeit&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                        &lt;/ul&gt;
+                    &lt;&lt;elseif _langCode.includes(&quot;fr&quot;) or _langCode.includes(&quot;法&quot;)&gt;&gt;
+                        &lt;ul&gt;
+                            &lt;li&gt;&lt;b&gt;字尾的子音&lt;/b&gt; 通常不發音 ➡️ 例: &lt;i&gt;Ballet&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Ballet&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ch&lt;/b&gt; 發英文的 &lt;b&gt;/sh/ (噓)&lt;/b&gt; ➡️ 例: &lt;i&gt;Chanson&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Chanson&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ou&lt;/b&gt; 發 &lt;b&gt;/oo/ (嗚)&lt;/b&gt; ➡️ 例: &lt;i&gt;Doux&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Doux&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;eau / au&lt;/b&gt; 發 &lt;b&gt;/o/ (喔)&lt;/b&gt; ➡️ 例: &lt;i&gt;Morceau&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Morceau&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                        &lt;/ul&gt;
+                    &lt;!-- ★★★ 新增：西班牙文 (es/西) 發音規則 ★★★ --&gt;
+                    &lt;&lt;elseif _langCode.includes(&quot;es&quot;) or _langCode.includes(&quot;西&quot;)&gt;&gt;
+                        &lt;ul&gt;
+                            &lt;li&gt;&lt;b&gt;j&lt;/b&gt; 以及 &lt;b&gt;g&lt;/b&gt;(在 e, i 前) 發 &lt;b&gt;/h/ (哈)&lt;/b&gt; ➡️ 例: &lt;i&gt;Gerónimo&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Gerónimo&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ll&lt;/b&gt; 發 &lt;b&gt;/y/ (耶)&lt;/b&gt; 的音 ➡️ 例: &lt;i&gt;Caballero&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Caballero&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;ñ&lt;/b&gt; 發 &lt;b&gt;/ny/ (捏)&lt;/b&gt; 的音 ➡️ 例: &lt;i&gt;España&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;España&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;b&gt;h&lt;/b&gt; 永遠 &lt;b&gt;不發音&lt;/b&gt; ➡️ 例: &lt;i&gt;Habanera&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Habanera&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
+                        &lt;/ul&gt;
+                    &lt;&lt;/if&gt;&gt;
+                &lt;/div&gt;
+            &lt;&lt;/if&gt;&gt;
+
+            &lt;!-- 記憶評估按鈕 (SRS 導航) --&gt;
+            &lt;div class=&quot;srs-nav&quot; style=&quot;margin-top: 20px;&quot;&gt;
                 &lt;&lt;button &quot;Again [1]&quot; &quot;Flashcard&quot;&gt;&gt;
                     &lt;&lt;run setup.logResult($Queue[0].word, &quot;Again&quot;)&gt;&gt;
                     &lt;&lt;set _item = $Queue.shift()&gt;&gt;
@@ -524,8 +719,12 @@ setup.testFinishPage = function() {
                 &lt;&lt;/button&gt;&gt;
             &lt;/div&gt;
         &lt;/div&gt;
-        &lt;&lt;run setup.speak($Queue[0].word)&gt;&gt;
+        
+        &lt;!-- 翻面時自動發音一次 --&gt;
+        &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
+        
     &lt;&lt;else&gt;&gt;
+        &lt;!-- 卡片未翻面時顯示的按鈕 --&gt;
         &lt;&lt;button &quot;顯示答案 (空白鍵)&quot;&gt;&gt;&lt;&lt;set $IsFlipped to true&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
     &lt;&lt;/if&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;
@@ -565,8 +764,11 @@ setup.testFinishPage = function() {
                 &lt;div class=&quot;summary-row&quot;&gt;
                     &lt;span class=&quot;summary-word&quot;&gt;_item.word &lt;span @class=&quot;&#39;status-tag &#39; + _item.code&quot;&gt;_item.status&lt;/span&gt;&lt;/span&gt;
                     &lt;span class=&quot;summary-action&quot;&gt;
+                        &lt;span style=&quot;font-size:0.8em; color:#888; margin-right:5px;&quot;&gt;(&lt;&lt;print setup.getLangName(_item.lang)&gt;&gt;)&lt;/span&gt;
                         &lt;span style=&quot;font-size:0.8em; color:#666;&quot;&gt;_item.trans&lt;/span&gt;
-                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;&lt;&lt;run setup.speak(_item.word)&gt;&gt;&lt;&lt;/button&gt;&gt;
+                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;
+                            &lt;&lt;run setup.speak(_item.word, _item.lang)&gt;&gt;
+                        &lt;&lt;/button&gt;&gt;
                     &lt;/span&gt;
                 &lt;/div&gt;
             &lt;&lt;/capture&gt;&gt;
