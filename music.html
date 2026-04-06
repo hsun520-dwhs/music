@@ -754,6 +754,9 @@ setup.getPronunciationRules = function(code) {
         if ($ArchiveFilter === &quot;all&quot;) return true;
         if ($ArchiveFilter === &quot;easy&quot;) return item.code === &quot;easy&quot;;
         return item.code === &quot;hard&quot; || item.code === &quot;again&quot;;
+    }).sort(function(a, b) {
+        /* 使用 localeCompare 進行 A-Z 排序，這對義大利文/英文術語最準確 */
+        return a.word.localeCompare(b.word);
     })&gt;&gt;
     &lt;&lt;if _filtered.length == 0&gt;&gt;
         &lt;div style=&quot;padding:20px; color:#888;&quot;&gt;此類別目前沒有名詞。&lt;/div&gt;
