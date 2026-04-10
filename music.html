@@ -106,23 +106,22 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 	</div>
 	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* --- 1. 定義顏色變數 --- */
 :root {
-    /* 淺色模式 (預設考試風格) */
-    --bg-color: #f8f9fa;
-    --text-color: #1a1a1a;
+    /* 淺色模式 (純淨考試風格) */
+    --bg-color: #ffffff;      /* 純白背景 */
+    --text-color: #000000;    /* 純黑文字 */
     --card-bg: #ffffff;
-    --card-border: #dee2e6;
-    --stats-bg: #f1f3f5;
-    --highlight: #0891b2;
+    --card-border: #cccccc;   /* 灰色邊框 */
+    --stats-bg: #f3f4f6;      /* 極淺灰統計區 */
+    --highlight: #2563eb;     /* 亮藍色 */
     --dash-row-bg: #ffffff;
-    --badge-bg: #f8f9fa;
-    --badge-text: #212529;
-    --details-bg: #f1f5f9;
-    --trans-color: #1d4ed8; /* 深藍，白底最清楚 */
-    --note-text: #334155;
+    --badge-bg: #ffffff;
+    --badge-text: #000000;
+    --details-bg: #f9fafb;    /* 詳情區用淡淡的灰色區分 */
+    --trans-color: #1e40af;   /* 翻譯用深藍色，考試感十足 */
 }
 
 html.dark-mode {
-    /* 深色模式 (原版風格) */
+    /* 深色模式 (夜間保護風格) */
     --bg-color: #111111;
     --text-color: #eeeeee;
     --card-bg: #1a1a1a;
@@ -133,8 +132,7 @@ html.dark-mode {
     --badge-bg: #262626;
     --badge-text: #eeeeee;
     --details-bg: #000000;
-    --trans-color: #ffd700; /* 金色，黑底最清楚 */
-    --note-text: #dddddd;
+    --trans-color: #ffd700;   /* 翻譯用金黃色 */
 }
 
 /* --- 2. 套用變數到現有樣式 --- */
@@ -235,7 +233,34 @@ body {
 @media screen and (max-width: 600px) {
     .dash-sub-row { flex-direction: column; }
     .word-title { font-size: 2.2em !important; }
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
+}
+/* --- 開發者專區樣式 (連動深淺色) --- */
+.dev-panel {
+    margin: 15px 0;
+    padding: 15px;
+    background: var(--stats-bg); /* 跟隨統計區的背景色 */
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    text-align: left;
+    font-size: 0.9em;
+}
+
+/* 測試模式的標籤文字顏色 */
+.dev-panel label {
+    color: #b45309; /* 淺色模式下用深橘色 */
+}
+
+.dev-subtext {
+    color: var(--text-color);
+    opacity: 0.6;
+    font-size: 0.85em;
+    margin-top: 5px;
+    margin-left: 25px;
+}
+
+/* 深色模式下的微調 */
+html.dark-mode .dev-panel label {
+    color: #ffaa00; /* 深色模式下用亮橘色 */</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
 setup.gasUrl = "https://script.google.com/macros/s/AKfycbz-pkYUO0evDpate7IjN4cedYqX_xABUwcanLMmvz_DZBGS2ELaeb3Bn_yPjONb_DO05Q/exec";
 
 // 偵測網址是否包含 dev=1，如果是，代表是老師/開發者
@@ -743,16 +768,16 @@ $(document).on(':passagerender', function() {
     &lt;h1&gt;🎵 音樂術語 AI 教練&lt;/h1&gt;
     
     &lt;!-- ★★★ 只有網址包含 dev=1 才會顯示這塊 ★★★ --&gt;
-    &lt;&lt;if setup.isDev&gt;&gt;
-        &lt;div style=&quot;margin: 15px 0; padding: 10px; background: #222; border-radius: 8px; border: 1px solid #444; font-size: 0.9em; text-align: left;&quot;&gt;
-            &lt;label style=&quot;cursor: pointer; color: #ffaa00;&quot;&gt;
-                &lt;&lt;checkbox &quot;$testMode&quot; false true&gt;&gt; 🛠️ 開啟「測試模式」
-            &lt;/label&gt;
-            &lt;div style=&quot;color: #888; font-size: 0.85em; margin-top: 5px; margin-left: 25px;&quot;&gt;
-                (打勾後不寫入 Google Sheet，僅供老師測試)
-            &lt;/div&gt;
+   &lt;&lt;if setup.isDev&gt;&gt;
+    &lt;div class=&quot;dev-panel&quot;&gt;
+        &lt;label style=&quot;cursor: pointer; font-weight: bold;&quot;&gt;
+            &lt;&lt;checkbox &quot;$testMode&quot; false true&gt;&gt; 🛠️ 開啟「測試模式」
+        &lt;/label&gt;
+        &lt;div class=&quot;dev-subtext&quot;&gt;
+            (打勾後不寫入 Google Sheet，僅供老師測試)
         &lt;/div&gt;
-    &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+&lt;&lt;/if&gt;&gt;
 
     &lt;&lt;button &quot;開始學習 10 個名詞&quot;&gt;&gt;
         &lt;&lt;run setup.fetchWords()&gt;&gt;
