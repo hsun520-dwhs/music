@@ -104,222 +104,137 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">#ui-bar { display: none; }
+	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* --- 1. 定義顏色變數 --- */
+:root {
+    /* 淺色模式 (預設考試風格) */
+    --bg-color: #f8f9fa;
+    --text-color: #1a1a1a;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --stats-bg: #f1f3f5;
+    --highlight: #0891b2;
+    --dash-row-bg: #ffffff;
+    --badge-bg: #f8f9fa;
+    --badge-text: #212529;
+    --details-bg: #f1f5f9;
+    --trans-color: #1d4ed8; /* 深藍，白底最清楚 */
+    --note-text: #334155;
+}
+
+html.dark-mode {
+    /* 深色模式 (原版風格) */
+    --bg-color: #111111;
+    --text-color: #eeeeee;
+    --card-bg: #1a1a1a;
+    --card-border: #333333;
+    --stats-bg: #000000;
+    --highlight: #00ffcc;
+    --dash-row-bg: #1a1a1a;
+    --badge-bg: #262626;
+    --badge-text: #eeeeee;
+    --details-bg: #000000;
+    --trans-color: #ffd700; /* 金色，黑底最清楚 */
+    --note-text: #dddddd;
+}
+
+/* --- 2. 套用變數到現有樣式 --- */
+#ui-bar { display: none; }
 #story { margin-left: 0 !important; }
 
 body {
-    background-color: #111;
-    color: #eee;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
     font-family: "Microsoft JhengHei", sans-serif;
+    transition: background-color 0.3s, color 0.3s; /* 變色平滑動畫 */
 }
 
 .card-box {
-    background: #1a1a1a;
-    padding: 15px 25px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 20px 30px;
     border-radius: 12px;
-    border: 1px solid #333;
     text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 850px;
+    margin: 20px auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* 單字標題 */
 .word-title {
     font-size: 3.2em !important;
-    color: #fff;
-    line-height: 1.1;
+    color: var(--text-color);
     margin: 10px 0 30px 0 !important;
 }
 
-/* 數據儀表板 */
 .stats-container {
-    background: #000;
-    padding: 10px;
+    background: var(--stats-bg);
+    border: 1px solid var(--card-border);
+    padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
-    border: 1px solid #444;
-}
-.highlight { color: #00ffcc; font-weight: bold; }
-.stats-sub { font-size: 0.85em; color: #aaa; }
-
-/* 重點摘要與來源 */
-.notes-box {
-    background: #262626;
-    padding: 15px;
-    margin: 10px 0 !important;
-    text-align: left;
-    border-left: 4px solid #68d;
-    line-height: 1.5;
-}
-.source-info {
-    margin-top: 10px;
-    font-size: 0.8em;
-    color: #777;
-    border-top: 1px solid #333;
-    padding-top: 5px;
 }
 
-/* 篩選按鈕 */
-.filter-group { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
-.filter-group button { 
-    padding: 5px 12px !important; background: #222 !important; border-radius: 15px !important; 
-    font-size: 0.85em !important; color: #888 !important; border: 1px solid #444 !important;
-}
-.filter-group button.active-filter { background: #35a !important; color: #fff !important; border-color: #68d !important; }
+.highlight { color: var(--highlight); font-weight: bold; }
 
-/* 列表 Row */
-.summary-container { text-align: left; margin: 10px 0; background: #111; border: 1px solid #333; overflow-y: auto; }
-.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-bottom: 1px solid #222; }
-.status-tag { font-size: 0.6em; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
-.status-tag.easy { background: #262; }
-.status-tag.hard { background: #660; }
-.status-tag.again { background: #822; }
-/* 發音規則提示框 */
-.pronunciation-box {
-    background: #1a2233;
-    padding: 12px 15px;
-    margin: 10px 0 !important;
-    text-align: left;
-    border-radius: 6px;
-    border-left: 4px solid #4a90e2;
-    font-size: 0.9em;
-    color: #cbd5e1;
-    line-height: 1.4;
-}
-.pronunciation-box ul {
-    margin: 5px 0 0 0;
-    padding-left: 20px;
-}
-.pronunciation-box li {
-    margin-bottom: 4px;
-}
-.pronunciation-box b {
-    color: #61dafb; /* 凸顯字母 */
-}
-/* 動態發音規則提示框 (藍色框框) */
-.pronunciation-box {
-    background: #1a2233;
-    padding: 12px 15px;
-    margin: 10px 0 !important;
-    text-align: left;
-    border-radius: 6px;
-    border-left: 4px solid #4a90e2;
-    font-size: 0.9em;
-    color: #cbd5e1;
-    line-height: 1.4;
-}
-.pronunciation-box ul {
-    margin: 5px 0 0 0;
-    padding-left: 20px;
-}
-.pronunciation-box li {
-    margin-bottom: 4px;
-}
-.pronunciation-box b {
-    color: #61dafb; /* 凸顯字母顏色，看起來更清楚 */
-}
-/* 迷你發音按鈕 (用於發音規則的小例子) */
-button.mini-audio-btn {
-    background: transparent !important;
-    border: 1px solid #4a90e2 !important;
-    color: #4a90e2 !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-    font-size: 0.8em !important;
-    margin-left: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-button.mini-audio-btn:hover {
-    background: #4a90e2 !important;
-    color: #fff !important;
-}
-/* --- 儀表板排版設計 --- */
-/* 儀表板排版設計 */
+/* 儀表板樣式 */
 .dash-main-title {
-    color: #fff;
-    border-bottom: 2px solid #555;
-    padding-bottom: 8px;
-    margin: 20px 0 10px 0;
-    font-size: 1.3em;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--text-color);
     text-align: left;
-    transition: color 0.2s, border-color 0.2s;
+    margin: 30px 0 15px 0;
 }
-.dash-main-title:hover {
-    color: #68d;
-    border-color: #68d;
-}
-/* 箭頭圖示旋轉動畫 */
-.toggle-icon {
-    display: inline-block;
-    font-size: 0.8em;
-    transition: transform 0.2s;
-    margin-right: 5px;
-    color: #888;
-}
-.toggle-icon.open {
-    transform: rotate(90deg);
-    color: #68d;
-}
+
 .dash-sub-row {
     display: flex;
-    flex-wrap: wrap; /* 手機版自動換行關鍵 */
-    align-items: flex-start;
-    margin-bottom: 12px;
-    background: #1a1a1a;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #333;
-}
-.dash-sub-label {
-    color: #aaa;
-    font-weight: bold;
-    font-size: 0.95em;
-    width: 140px; /* PC版固定寬度 */
-    margin-top: 6px;
-    text-align: left;
-    line-height: 1.4;
-}
-.dash-badge-container {
-    display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    flex: 1; /* 佔滿剩餘空間 */
-}
-
-/* 單字標籤按鈕 */
-.dash-badge {
-    background: #262626;
-    border: 1px solid #444;
-    color: #eee;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: 0.2s;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-.dash-badge:hover { background: #444; border-color: #68d; }
-
-/* 點擊展開的細節區塊 */
-.dash-details {
-    background: #000;
+    background: var(--dash-row-bg);
+    border: 1px solid var(--card-border);
+    margin-bottom: 12px;
     padding: 12px;
-    margin: 5px 0 15px 0;
-    border-radius: 6px;
-    border-left: 4px solid #68d;
-    display: none;
-    text-align: left;
-    width: 100%;
+    border-radius: 8px;
 }
 
-/* 手機版微調：當螢幕小於 600px 時，標籤放在單字上方 */
+.dash-badge {
+    background: var(--badge-bg);
+    border: 1px solid var(--card-border);
+    color: var(--badge-text);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.dash-details, .notes-box {
+    background: var(--details-bg) !important;
+    border-left: 5px solid #3b82f6 !important;
+    color: var(--text-color);
+    text-align: left;
+    padding: 15px;
+    margin: 10px 5px;
+}
+
+.trans-text { color: var(--trans-color) !important; }
+
+#dash-search {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* 針對發音盒子的修正 */
+.pronunciation-box {
+    background: var(--details-bg);
+    border-left: 5px solid #3b82f6;
+    color: var(--text-color);
+    padding: 15px;
+    text-align: left;
+}
+
 @media screen and (max-width: 600px) {
     .dash-sub-row { flex-direction: column; }
-    .dash-sub-label { width: 100%; margin-bottom: 8px; border-bottom: 1px dashed #333; padding-bottom: 4px;}
+    .word-title { font-size: 2.2em !important; }
 }</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
 setup.gasUrl = "https://script.google.com/macros/s/AKfycbz-pkYUO0evDpate7IjN4cedYqX_xABUwcanLMmvz_DZBGS2ELaeb3Bn_yPjONb_DO05Q/exec";
 
@@ -680,6 +595,29 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
             $container.hide();
         }
     });
+});
+// --- L. 風格切換功能 (深色/淺色) ---
+
+// 1. 在系統設定中加入切換開關
+Setting.addToggle("darkMode", {
+    label: "🌙 深色模式 (Dark Mode)",
+    default: false, // 預設為淺色(考試風格)
+    onChange: function() {
+        if (settings.darkMode) {
+            $('html').addClass('dark-mode');
+        } else {
+            $('html').removeClass('dark-mode');
+        }
+    }
+});
+
+// 2. 每次進入頁面時，自動套用目前的設定 (防止跳轉後跑掉)
+$(document).on(':passagerender', function() {
+    if (settings.darkMode) {
+        $('html').addClass('dark-mode');
+    } else {
+        $('html').removeClass('dark-mode');
+    }
 });</script><tw-passagedata pid="1" name="StoryInit" tags="" position="475,100" size="100,100">&lt;&lt;set $Queue to []&gt;&gt;
 &lt;&lt;set $IsFlipped to false&gt;&gt;
 &lt;&lt;set $FinishedCount to 0&gt;&gt;
@@ -836,7 +774,18 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
         &lt;&lt;run setup.testFinishPage()&gt;&gt;
     &lt;&lt;/link&gt;&gt;
 &lt;/div&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;&lt;/if&gt;&gt;
+&lt;div style=&quot;text-align: right; margin-bottom: 10px;&quot;&gt;
+    &lt;&lt;button &quot;🌓 切換深淺風格&quot;&gt;&gt;
+        &lt;&lt;set settings.darkMode to !settings.darkMode&gt;&gt;
+        &lt;&lt;run Setting.save()&gt;&gt;
+        &lt;&lt;if settings.darkMode&gt;&gt;
+            &lt;&lt;run $(&#39;html&#39;).addClass(&#39;dark-mode&#39;)&gt;&gt;
+        &lt;&lt;else&gt;&gt;
+            &lt;&lt;run $(&#39;html&#39;).removeClass(&#39;dark-mode&#39;)&gt;&gt;
+        &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
 &lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.8em; color:#666;&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
     
@@ -1035,10 +984,10 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
 &lt;span style=&quot;margin-left:10px; color:#00ffcc; font-family:monospace; background:#000; padding:2px 8px; border-radius:4px; border:1px solid #333; font-size:0.9em;&quot;&gt;
     _code
 &lt;/span&gt;
-&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="Dashboard" tags="" position="475,225" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;max-width: 850px;&quot;&gt;
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="Dashboard" tags="" position="475,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
     &lt;h2 style=&quot;margin-bottom: 5px;&quot;&gt;🎯 考前弱點掃描&lt;/h2&gt;
-    &lt;div style=&quot;font-size:0.85em; color:#aaa; margin-bottom:15px;&quot;&gt;
+    &lt;div style=&quot;font-size:0.85em; color:#495057; margin-bottom:15px;&quot;&gt;
         💡 點擊「主分類」展開內容；再點擊「單字」查看翻譯與發音。&lt;br&gt;
         狀態指示：🔴不熟 / 🟡模糊 / 🟢熟悉 / ⚪未練習
     &lt;/div&gt;
@@ -1046,60 +995,50 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
     &lt;!-- 🔍 搜尋框 --&gt;
     &lt;div style=&quot;margin-bottom: 25px;&quot;&gt;
         &lt;input type=&quot;text&quot; id=&quot;dash-search&quot; placeholder=&quot;🔍 輸入英文、中文或摘要關鍵字...&quot; 
-               style=&quot;width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; font-size: 1.1em;&quot;&gt;
+               style=&quot;width: 100%; padding: 12px; border-radius: 8px;&quot;&gt;
     &lt;/div&gt;
     
     &lt;div style=&quot;text-align: left;&quot; id=&quot;dash-container&quot;&gt;
     &lt;&lt;for _m, _mainObj range $DashboardData&gt;&gt;
         &lt;&lt;set _mainId to &quot;maincat-&quot; + _m&gt;&gt;
 
-        &lt;!-- 主標題 --&gt;
         &lt;h3 class=&quot;dash-main-title toggle-main dash-group-title&quot; @data-target=&quot;_mainId&quot; style=&quot;cursor: pointer; user-select: none;&quot;&gt;
             &lt;span class=&quot;toggle-icon&quot;&gt;▶&lt;/span&gt; 📂 _mainObj.mainCatName
         &lt;/h3&gt;
         
         &lt;div class=&quot;dash-main-container&quot; @id=&quot;_mainId&quot; style=&quot;display: none; padding-left: 10px;&quot;&gt;
-            
             &lt;&lt;for _s, _subObj range _mainObj.subGroups&gt;&gt;
-                &lt;!-- 次分類列 --&gt;
                 &lt;div class=&quot;dash-sub-row dash-row&quot;&gt;
-                    &lt;div class=&quot;dash-sub-label&quot;&gt;_subObj.subCatName&lt;/div&gt;
+                    &lt;div class=&quot;dash-sub-label&quot; style=&quot;font-weight:bold; margin-bottom:8px; color:#666;&quot;&gt;_subObj.subCatName&lt;/div&gt;
                     &lt;div class=&quot;dash-badge-container&quot;&gt;
-                        
                         &lt;&lt;for _w, _item range _subObj.words&gt;&gt;
                             &lt;&lt;capture _item, _m, _s, _w&gt;&gt;
                                 &lt;&lt;set _detailId to &quot;detail-&quot; + _m + &quot;-&quot; + _s + &quot;-&quot; + _w&gt;&gt;
-                                
-                                &lt;!-- 單字最外層容器 --&gt;
                                 &lt;div class=&quot;dash-item&quot; style=&quot;display: inline-block;&quot;&gt;
-                                    
-                                    &lt;!-- 膠囊按鈕 (搜尋引擎會抓這裡的文字) --&gt;
                                     &lt;div class=&quot;dash-badge&quot; @data-target=&quot;_detailId&quot;&gt;
                                         &lt;span&gt;_item.dot&lt;/span&gt; _item.word
                                     &lt;/div&gt;
-                                    
-                                    &lt;!-- 展開面板 (包含中文翻譯與摘要) --&gt;
-                                    &lt;div class=&quot;dash-details&quot; @id=&quot;_detailId&quot;&gt;
-                                        &lt;span class=&quot;trans-text&quot; style=&quot;color:#ffd700; font-size:1.1em; font-weight:bold;&quot;&gt;_item.trans&lt;/span&gt;
-                                        &lt;span style=&quot;font-size: 0.8em; color:#888; margin-left:10px;&quot;&gt;
-                                            (狀態: _item.statusText | 紀錄: _item.history)
+                                    &lt;div class=&quot;dash-details&quot; @id=&quot;_detailId&quot; style=&quot;display:none; margin: 10px 5px; padding: 15px; border-radius: 8px;&quot;&gt;
+                                        &lt;!-- 這裡將翻譯改為深藍色，以確保白底可讀 --&gt;
+                                        &lt;span class=&quot;trans-text&quot; style=&quot;color:#1d4ed8; font-size:1.3em; font-weight:bold;&quot;&gt;_item.trans&lt;/span&gt;
+                                        &lt;span style=&quot;font-size: 0.85em; color:#64748b; margin-left:10px;&quot;&gt;
+                                            (狀態: _item.statusText)
                                         &lt;/span&gt;
-                                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;
-                                            &lt;&lt;run setup.speak(_item.word, _item.lang)&gt;&gt;
-                                        &lt;&lt;/button&gt;&gt;
-                                        &lt;div class=&quot;notes-text&quot; style=&quot;margin-top:8px; color:#ddd; font-size: 0.9em; line-height:1.5;&quot;&gt;
-                                            📌 _item.notes
+                                        &lt;div style=&quot;margin: 10px 0;&quot;&gt;
+                                            &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;
+                                                &lt;&lt;run setup.speak(_item.word, _item.lang)&gt;&gt;
+                                            &lt;&lt;/button&gt;&gt;
+                                        &lt;/div&gt;
+                                        &lt;div class=&quot;notes-text&quot; style=&quot;color:#334155; font-size: 0.95em; line-height:1.6;&quot;&gt;
+                                            📌 &lt;strong&gt;重點：&lt;/strong&gt;_item.notes
                                         &lt;/div&gt;
                                     &lt;/div&gt;
-
                                 &lt;/div&gt;
                             &lt;&lt;/capture&gt;&gt;
                         &lt;&lt;/for&gt;&gt;
-
                     &lt;/div&gt;
                 &lt;/div&gt;
             &lt;&lt;/for&gt;&gt;
-
         &lt;/div&gt;
     &lt;&lt;/for&gt;&gt;
     &lt;/div&gt;
