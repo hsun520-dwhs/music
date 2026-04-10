@@ -614,17 +614,17 @@ setup.fetchDashboard = function() {
     });
 };
 // ==========================================
-// K. 儀表板 UI 控制器與搜尋引擎
+// K. 儀表板 UI 控制器與搜尋引擎 (終極修正版)
 // ==========================================
 
-// 1. 單字標籤點擊展開 (事件委派，綁定在 body 確保隨時有效)
+// 1. 單字標籤點擊展開
 $('body').off('click.badge').on('click.badge', '.dash-badge', function(e) {
     e.stopPropagation();
     var targetId = $(this).attr('data-target');
     $('#' + targetId).slideToggle(200);
 });
 
-// 2. 主分類標題點擊展開 (手風琴效果)
+// 2. 主分類標題點擊展開
 $('body').off('click.main').on('click.main', '.toggle-main', function(e) {
     e.stopPropagation();
     var targetId = $(this).attr('data-target');
@@ -632,54 +632,52 @@ $('body').off('click.main').on('click.main', '.toggle-main', function(e) {
     $('#' + targetId).slideToggle(300);
 });
 
-// 3. 即時搜尋引擎 (Live Search)
+// 3. 即時搜尋引擎 (支援中文，不依賴 visible 狀態)
 $('body').off('input.search keyup.search').on('input.search keyup.search', '#dash-search', function() {
     var query = $(this).val().toLowerCase().trim();
     
-    // 如果搜尋框是空的：全部恢復原狀 (折疊起來)
+    // 如果搜尋框是空的：隱藏所有面板，收回箭頭
     if (query === "") {
         $('.dash-item').show();
         $('.dash-row').show();
         $('.dash-group-title').show();
-        $('.dash-main-container').hide(); // 收起內容
-        $('.toggle-icon').text('▶').removeClass('open'); // 箭頭轉回去
+        $('.dash-main-container').hide();
+        $('.toggle-icon').removeClass('open');
         return;
     }
 
-    // 當有打字時：強迫打開所有內容面板，並將箭頭朝下
-    $('.dash-main-container').show();
-    $('.toggle-icon').text('▼').addClass('open');
-
-    // 比對單字與翻譯
+    // 搜尋比對：直接檢查每個 .dash-item 裡的文字
     $('.dash-item').each(function() {
-        var text = $(this).attr('data-search-text') || "";
-        if (text.indexOf(query) > -1) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
-    });
-
-    // 隱藏沒有命中單字的「次分類列」(.dash-row)
-    $('.dash-row').each(function() {
-        if ($(this).find('.dash-item:visible').length === 0) {
-            $(this).hide();
-        } else {
-            $(this).show();
-        }
-    });
-
-    // 隱藏沒有命中次分類的「主分類標題」(.dash-group-title)
-    $('.dash-main-container').each(function() {
-        var targetId = $(this).attr('id');
-        var $title = $('.toggle-main[data-target="' + targetId + '"]');
+        var $item = $(this);
+        // 抓取包含英文單字、中文翻譯、摘要在內的所有文字
+        var allContent = $item.text().toLowerCase();
         
-        if ($(this).find('.dash-row:visible').length === 0) {
-            $(this).hide();
-            $title.hide();
+        if (allContent.indexOf(query) > -1) {
+            $item.addClass('search-match').show();
         } else {
-            $(this).show();
-            $title.show();
+            $item.removeClass('search-match').hide();
+        }
+    });
+
+    // 顯示邏輯：如果次分類裡有匹配的單字，就顯示該次分類
+    $('.dash-row').each(function() {
+        var hasMatch = $(this).find('.search-match').length > 0;
+        $(this).toggle(hasMatch);
+    });
+
+    // 顯示邏輯：如果主分類資料夾裡有匹配的單字，就顯示資料夾並強行展開
+    $('.dash-main-container').each(function() {
+        var $container = $(this);
+        var mainId = $container.attr('id');
+        var $title = $('.toggle-main[data-target="' + mainId + '"]');
+        var hasMatch = $container.find('.search-match').length > 0;
+
+        if (hasMatch) {
+            $title.show().find('.toggle-icon').addClass('open');
+            $container.show();
+        } else {
+            $title.hide();
+            $container.hide();
         }
     });
 });</script><tw-passagedata pid="1" name="StoryInit" tags="" position="475,100" size="100,100">&lt;&lt;set $Queue to []&gt;&gt;
@@ -1047,54 +1045,49 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
 
     &lt;!-- 🔍 搜尋框 --&gt;
     &lt;div style=&quot;margin-bottom: 25px;&quot;&gt;
-        &lt;input type=&quot;text&quot; id=&quot;dash-search&quot; placeholder=&quot;🔍 搜尋英文或中文翻譯...&quot; 
-               style=&quot;width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; font-size: 1.05em;&quot;&gt;
+        &lt;input type=&quot;text&quot; id=&quot;dash-search&quot; placeholder=&quot;🔍 輸入英文、中文或摘要關鍵字...&quot; 
+               style=&quot;width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; font-size: 1.1em;&quot;&gt;
     &lt;/div&gt;
     
     &lt;div style=&quot;text-align: left;&quot; id=&quot;dash-container&quot;&gt;
-    &lt;!-- 1. 主分類迴圈 --&gt;
     &lt;&lt;for _m, _mainObj range $DashboardData&gt;&gt;
         &lt;&lt;set _mainId to &quot;maincat-&quot; + _m&gt;&gt;
 
-        &lt;!-- 主標題 (注意這裡加上了 @data-target) --&gt;
+        &lt;!-- 主標題 --&gt;
         &lt;h3 class=&quot;dash-main-title toggle-main dash-group-title&quot; @data-target=&quot;_mainId&quot; style=&quot;cursor: pointer; user-select: none;&quot;&gt;
             &lt;span class=&quot;toggle-icon&quot;&gt;▶&lt;/span&gt; 📂 _mainObj.mainCatName
         &lt;/h3&gt;
         
-        &lt;!-- 主分類容器 (注意這裡加上了 @id) --&gt;
         &lt;div class=&quot;dash-main-container&quot; @id=&quot;_mainId&quot; style=&quot;display: none; padding-left: 10px;&quot;&gt;
             
-            &lt;!-- 2. 次分類迴圈 --&gt;
             &lt;&lt;for _s, _subObj range _mainObj.subGroups&gt;&gt;
                 &lt;!-- 次分類列 --&gt;
                 &lt;div class=&quot;dash-sub-row dash-row&quot;&gt;
                     &lt;div class=&quot;dash-sub-label&quot;&gt;_subObj.subCatName&lt;/div&gt;
                     &lt;div class=&quot;dash-badge-container&quot;&gt;
                         
-                        &lt;!-- 3. 單字迴圈 --&gt;
                         &lt;&lt;for _w, _item range _subObj.words&gt;&gt;
                             &lt;&lt;capture _item, _m, _s, _w&gt;&gt;
                                 &lt;&lt;set _detailId to &quot;detail-&quot; + _m + &quot;-&quot; + _s + &quot;-&quot; + _w&gt;&gt;
-                                &lt;&lt;set _searchText to (_item.word + &quot; &quot; + _item.trans).toLowerCase()&gt;&gt;
                                 
                                 &lt;!-- 單字最外層容器 --&gt;
-                                &lt;div class=&quot;dash-item&quot; @data-search-text=&quot;_searchText&quot; style=&quot;display: inline-block;&quot;&gt;
+                                &lt;div class=&quot;dash-item&quot; style=&quot;display: inline-block;&quot;&gt;
                                     
-                                    &lt;!-- 膠囊按鈕 --&gt;
+                                    &lt;!-- 膠囊按鈕 (搜尋引擎會抓這裡的文字) --&gt;
                                     &lt;div class=&quot;dash-badge&quot; @data-target=&quot;_detailId&quot;&gt;
                                         &lt;span&gt;_item.dot&lt;/span&gt; _item.word
                                     &lt;/div&gt;
                                     
-                                    &lt;!-- 展開面板 --&gt;
+                                    &lt;!-- 展開面板 (包含中文翻譯與摘要) --&gt;
                                     &lt;div class=&quot;dash-details&quot; @id=&quot;_detailId&quot;&gt;
-                                        &lt;span style=&quot;color:#ffd700; font-size:1.1em; font-weight:bold;&quot;&gt;_item.trans&lt;/span&gt;
+                                        &lt;span class=&quot;trans-text&quot; style=&quot;color:#ffd700; font-size:1.1em; font-weight:bold;&quot;&gt;_item.trans&lt;/span&gt;
                                         &lt;span style=&quot;font-size: 0.8em; color:#888; margin-left:10px;&quot;&gt;
                                             (狀態: _item.statusText | 紀錄: _item.history)
                                         &lt;/span&gt;
                                         &lt;&lt;button &quot;🔊&quot;&gt;&gt;
                                             &lt;&lt;run setup.speak(_item.word, _item.lang)&gt;&gt;
                                         &lt;&lt;/button&gt;&gt;
-                                        &lt;div style=&quot;margin-top:8px; color:#ddd; font-size: 0.9em; line-height:1.5;&quot;&gt;
+                                        &lt;div class=&quot;notes-text&quot; style=&quot;margin-top:8px; color:#ddd; font-size: 0.9em; line-height:1.5;&quot;&gt;
                                             📌 _item.notes
                                         &lt;/div&gt;
                                     &lt;/div&gt;
