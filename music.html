@@ -1056,17 +1056,17 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
     &lt;&lt;for _m, _mainObj range $DashboardData&gt;&gt;
         &lt;&lt;set _mainId to &quot;maincat-&quot; + _m&gt;&gt;
 
-        &lt;!-- 主標題 (加上 dash-group-title 供搜尋引擎控制) --&gt;
-        &lt;h3 class=&quot;dash-main-title toggle-main dash-group-title&quot; data-target=&quot;_mainId&quot; style=&quot;cursor: pointer; user-select: none;&quot;&gt;
+        &lt;!-- 主標題 (注意這裡加上了 @data-target) --&gt;
+        &lt;h3 class=&quot;dash-main-title toggle-main dash-group-title&quot; @data-target=&quot;_mainId&quot; style=&quot;cursor: pointer; user-select: none;&quot;&gt;
             &lt;span class=&quot;toggle-icon&quot;&gt;▶&lt;/span&gt; 📂 _mainObj.mainCatName
         &lt;/h3&gt;
         
-        &lt;!-- 主分類容器 --&gt;
-        &lt;div class=&quot;dash-main-container&quot; id=&quot;_mainId&quot; style=&quot;display: none; padding-left: 10px;&quot;&gt;
+        &lt;!-- 主分類容器 (注意這裡加上了 @id) --&gt;
+        &lt;div class=&quot;dash-main-container&quot; @id=&quot;_mainId&quot; style=&quot;display: none; padding-left: 10px;&quot;&gt;
             
             &lt;!-- 2. 次分類迴圈 --&gt;
             &lt;&lt;for _s, _subObj range _mainObj.subGroups&gt;&gt;
-                &lt;!-- 次分類列 (加上 dash-row 供搜尋引擎控制) --&gt;
+                &lt;!-- 次分類列 --&gt;
                 &lt;div class=&quot;dash-sub-row dash-row&quot;&gt;
                     &lt;div class=&quot;dash-sub-label&quot;&gt;_subObj.subCatName&lt;/div&gt;
                     &lt;div class=&quot;dash-badge-container&quot;&gt;
@@ -1077,7 +1077,7 @@ $('body').off('input.search keyup.search').on('input.search keyup.search', '#das
                                 &lt;&lt;set _detailId to &quot;detail-&quot; + _m + &quot;-&quot; + _s + &quot;-&quot; + _w&gt;&gt;
                                 &lt;&lt;set _searchText to (_item.word + &quot; &quot; + _item.trans).toLowerCase()&gt;&gt;
                                 
-                                &lt;!-- 單字最外層容器 (加上 dash-item 與搜尋字串) --&gt;
+                                &lt;!-- 單字最外層容器 --&gt;
                                 &lt;div class=&quot;dash-item&quot; @data-search-text=&quot;_searchText&quot; style=&quot;display: inline-block;&quot;&gt;
                                     
                                     &lt;!-- 膠囊按鈕 --&gt;
