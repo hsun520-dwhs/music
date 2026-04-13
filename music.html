@@ -104,46 +104,53 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* --- 1. 定義顏色變數 --- */
+	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* ==========================================
+   1. 顏色變數定義 (支援深淺色切換)
+   ========================================== */
 :root {
-    /* 淺色模式 (純淨考試風格) */
-    --bg-color: #ffffff;      /* 純白背景 */
-    --text-color: #000000;    /* 純黑文字 */
+    /* ☀️ 淺色模式 (考試風格) */
+    --bg-color: #f4f6f9;
+    --text-color: #1a1a1a;
+    --text-muted: #666666;
     --card-bg: #ffffff;
-    --card-border: #cccccc;   /* 灰色邊框 */
-    --stats-bg: #f3f4f6;      /* 極淺灰統計區 */
-    --highlight: #2563eb;     /* 亮藍色 */
-    --dash-row-bg: #ffffff;
-    --badge-bg: #ffffff;
-    --badge-text: #000000;
-    --details-bg: #f9fafb;    /* 詳情區用淡淡的灰色區分 */
-    --trans-color: #1e40af;   /* 翻譯用深藍色，考試感十足 */
+    --card-border: #d1d5db;
+    --stats-bg: #f9fafb;
+    --highlight: #2563eb;    /* 考試藍 */
+    --trans-color: #1e40af;  /* 深藍翻譯字 */
+    --badge-bg: #f3f4f6;
+    --badge-text: #374151;
+    --details-bg: #f9fafb;
+    --hr-color: #e5e7eb;
 }
 
 html.dark-mode {
-    /* 深色模式 (夜間保護風格) */
+    /* 🌙 深色模式 (原版風格) */
     --bg-color: #111111;
     --text-color: #eeeeee;
+    --text-muted: #aaaaaa;
     --card-bg: #1a1a1a;
     --card-border: #333333;
     --stats-bg: #000000;
-    --highlight: #00ffcc;
-    --dash-row-bg: #1a1a1a;
+    --highlight: #00ffcc;    /* 螢光綠 */
+    --trans-color: #ffd700;  /* 金色翻譯字 */
     --badge-bg: #262626;
     --badge-text: #eeeeee;
     --details-bg: #000000;
-    --trans-color: #ffd700;   /* 翻譯用金黃色 */
+    --hr-color: #333333;
 }
 
-/* --- 2. 套用變數到現有樣式 --- */
+/* ==========================================
+   2. 全域基礎樣式
+   ========================================== */
 #ui-bar { display: none; }
-#story { margin-left: 0 !important; }
+#story { margin-left: 0 !important; padding: 10px; }
 
 body {
     background-color: var(--bg-color) !important;
     color: var(--text-color) !important;
-    font-family: "Microsoft JhengHei", sans-serif;
-    transition: background-color 0.3s, color 0.3s; /* 變色平滑動畫 */
+    font-family: "Microsoft JhengHei", "Apple LiGothic Medium", sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    line-height: 1.6;
 }
 
 .card-box {
@@ -153,114 +160,227 @@ body {
     border-radius: 12px;
     text-align: center;
     max-width: 850px;
-    margin: 20px auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin: 15px auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.word-title {
-    font-size: 3.2em !important;
-    color: var(--text-color);
-    margin: 10px 0 30px 0 !important;
+h1, h2, h3 { color: var(--text-color); }
+
+/* ==========================================
+   3. 儀表板與單字標籤 (Dashboard)
+   ========================================== */
+
+/* 主分類標題 */
+.dash-main-title {
+    border-bottom: 2px solid var(--card-border);
+    padding-bottom: 10px;
+    margin: 25px 0 15px 0;
+    font-size: 1.35em;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
 }
+.dash-main-title:hover { color: var(--highlight); }
+
+/* 展開箭頭旋轉 */
+.toggle-icon {
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.2s;
+    color: var(--text-muted);
+}
+.toggle-icon.open { transform: rotate(90deg); color: var(--highlight); }
+
+/* 次分類 Row */
+.dash-sub-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+}
+.dash-sub-label {
+    color: var(--text-muted);
+    font-weight: bold;
+    font-size: 0.9em;
+    width: 140px;
+    text-align: left;
+}
+
+/* 單字膠囊標籤 */
+.dash-badge-container { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+.dash-badge {
+    background: var(--badge-bg);
+    border: 1px solid var(--card-border);
+    color: var(--badge-text);
+    padding: 7px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: 0.15s;
+    user-select: none;
+}
+.dash-badge:hover { 
+    background: var(--highlight); 
+    color: #fff; 
+    transform: scale(1.05); 
+}
+
+/* 點擊展開的詳情面板 */
+.dash-details, .notes-box {
+    background: var(--details-bg) !important;
+    padding: 18px;
+    margin: 12px 0;
+    border-radius: 8px;
+    border-left: 6px solid var(--highlight) !important;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    display: none; /* 預設隱藏 */
+}
+
+/* ==========================================
+   4. 搜尋框、統計區與按鈕
+   ========================================== */
+#dash-search {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 2px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+#dash-search:focus { border-color: var(--highlight); outline: none; }
 
 .stats-container {
     background: var(--stats-bg);
     border: 1px solid var(--card-border);
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-bottom: 20px;
 }
-
 .highlight { color: var(--highlight); font-weight: bold; }
 
-/* 儀表板樣式 */
-.dash-main-title {
-    color: var(--text-color);
-    border-bottom: 2px solid var(--text-color);
-    text-align: left;
-    margin: 30px 0 15px 0;
-}
-
-.dash-sub-row {
-    display: flex;
-    flex-wrap: wrap;
-    background: var(--dash-row-bg);
-    border: 1px solid var(--card-border);
-    margin-bottom: 12px;
-    padding: 12px;
-    border-radius: 8px;
-}
-
-.dash-badge {
-    background: var(--badge-bg);
-    border: 1px solid var(--card-border);
-    color: var(--badge-text);
-    padding: 6px 14px;
-    border-radius: 20px;
+button {
+    background-color: var(--highlight) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
 }
+button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-.dash-details, .notes-box {
-    background: var(--details-bg) !important;
-    border-left: 5px solid #3b82f6 !important;
-    color: var(--text-color);
+/* ==========================================
+   5. 結算頁面 (FinishPage) 修正
+   ========================================== */
+.summary-container {
     text-align: left;
-    padding: 15px;
-    margin: 10px 5px;
-}
-
-.trans-text { color: var(--trans-color) !important; }
-
-#dash-search {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 2px solid var(--card-border);
     background: var(--card-bg);
-    color: var(--text-color);
-}
-
-/* 針對發音盒子的修正 */
-.pronunciation-box {
-    background: var(--details-bg);
-    border-left: 5px solid #3b82f6;
-    color: var(--text-color);
-    padding: 15px;
-    text-align: left;
-}
-
-@media screen and (max-width: 600px) {
-    .dash-sub-row { flex-direction: column; }
-    .word-title { font-size: 2.2em !important; }
-}
-/* --- 開發者專區樣式 (連動深淺色) --- */
-.dev-panel {
-    margin: 15px 0;
-    padding: 15px;
-    background: var(--stats-bg); /* 跟隨統計區的背景色 */
-    border-radius: 8px;
     border: 1px solid var(--card-border);
-    text-align: left;
-    font-size: 0.9em;
+    border-radius: 10px;
+    max-height: 400px;
+    overflow-y: auto; /* 這是捲軸關鍵 */
+    margin: 20px 0;
+    position: relative;
+    z-index: 1;
 }
 
-/* 測試模式的標籤文字顏色 */
-.dev-panel label {
-    color: #b45309; /* 淺色模式下用深橘色 */
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--hr-color);
+}
+.summary-row:last-child { border-bottom: none; }
+
+/* 防止按鈕在結算頁被擋住或蓋住的底部容器 */
+.finish-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid var(--card-border);
+    width: 100%;
+    clear: both;
 }
 
-.dev-subtext {
+/* ==========================================
+   6. 單字卡片頁面 (Flashcard)
+   ========================================== */
+.word-title {
+    font-size: 3.2em !important;
     color: var(--text-color);
-    opacity: 0.6;
-    font-size: 0.85em;
-    margin-top: 5px;
-    margin-left: 25px;
+    font-weight: bold;
+    margin: 20px 0 !important;
+}
+.translation {
+    color: var(--trans-color);
+    font-weight: bold;
+    margin: 15px 0;
 }
 
-/* 深色模式下的微調 */
-html.dark-mode .dev-panel label {
-    color: #ffaa00; /* 深色模式下用亮橘色 */</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
+/* ==========================================
+   7. 發音規則提示框
+   ========================================== */
+.pronunciation-box {
+    background: var(--stats-bg);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border-left: 5px solid var(--highlight);
+    color: var(--text-color);
+    text-align: left;
+}
+.pronunciation-box b { color: var(--highlight); }
+
+/* ==========================================
+   8. 手機版自適應微調
+   ========================================== */
+@media screen and (max-width: 600px) {
+    .card-box { padding: 15px; }
+    .word-title { font-size: 2.3em !important; }
+    .dash-sub-row { flex-direction: column; padding: 10px; }
+    .dash-sub-label { 
+        width: 100%; 
+        margin-bottom: 12px; 
+        border-bottom: 1px dashed var(--card-border); 
+        padding-bottom: 5px;
+    }
+    .summary-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .summary-action { align-self: flex-end; }
+}
+/* --- 修正：確保練習時的摘要與來源絕對顯示 --- */
+.notes-box {
+    display: block !important; /* 強制顯示 */
+    background: var(--details-bg) !important;
+    border-left: 6px solid var(--highlight) !important;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: left;
+    color: var(--text-color) !important;
+    border-radius: 8px;
+}
+
+.source-info {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--card-border);
+    font-size: 0.9em;
+    color: var(--text-muted) !important;
+}
+
+/* 僅有在 Dashboard 裡面的詳情才需要預設隱藏 */
+.dash-details {
+    display: none; 
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// --- 1. 網址設定 (請確保這是您最新部署的網址) ---
 setup.gasUrl = "https://script.google.com/macros/s/AKfycbz-pkYUO0evDpate7IjN4cedYqX_xABUwcanLMmvz_DZBGS2ELaeb3Bn_yPjONb_DO05Q/exec";
 
 // 偵測網址是否包含 dev=1，如果是，代表是老師/開發者
@@ -317,10 +437,19 @@ setup.fetchStats = function() {
     });
 };
 
-// B. 提取 10 個名詞
-setup.fetchWords = function() {
-    $('#stats-area').html('<div class="stats-loading">正在提取 10 個名詞...</div>');
-    setup.callGAS({ action: "getWords" }, function(data) {
+// B. 提取 10 個名詞 (支援地毯模式)
+setup.fetchWords = function(mode) {
+    var loadingMsg = (mode === "carpet") ? "地毯模式：正在提取全新名詞..." : "正在提取練習名詞...";
+    $('#stats-area').html('<div class="stats-loading">' + loadingMsg + '</div>');
+    
+    setup.callGAS({ action: "getWords", mode: mode }, function(data) {
+        if (data.length === 0) {
+            // 地毯模式完成的提示
+            UI.alert("🎊 太棒了！所有術語都已經至少練習過一次。地毯模式已完成，請切換回「一般模式」進行循環複習！");
+            setup.fetchStats(); // 重新整理首頁數據
+            return;
+        }
+        
         State.variables.Queue = data.map(function(item) {
             item.startStatus = setup.determineStatus(item.initA, item.initH, item.initPts, item.initE || 0);
             return item;
@@ -648,178 +777,18 @@ $(document).on(':passagerender', function() {
 &lt;&lt;set $FinishedCount to 0&gt;&gt;
 &lt;&lt;set $TotalInSession to 0&gt;&gt;
 &lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;
-&lt;&lt;set $testMode to false&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;&lt;set $testMode to false&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;max-width: 850px;&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
-    &lt;h2 style=&quot;margin-bottom:10px !important;&quot;&gt;🎉 練習完成！&lt;/h2&gt;
-    &lt;p class=&quot;stats-sub&quot;&gt;完成時間：&lt;&lt;print new Date().toLocaleString()&gt;&gt;&lt;/p&gt;
-
-    &lt;&lt;set _changes = {
-        &quot;✨ 全新學習&quot;: [],
-        &quot;💎 維持熟悉&quot;: [],
-        &quot;📈 進步：模糊 ➔ 熟悉&quot;: [],
-        &quot;📈 進步：不熟 ➔ 熟悉&quot;: [],
-        &quot;📈 進步：不熟 ➔ 模糊&quot;: [],
-        &quot;📉 退步：熟悉 ➔ 模糊/不熟&quot;: [],
-        &quot;📉 退步：模糊 ➔ 不熟&quot;: [],
-        &quot;✊ 原地踏步&quot;: []
-    }&gt;&gt;
-
-    &lt;&lt;for _item range $SessionList&gt;&gt;
-        &lt;&lt;set _word = _item.word&gt;&gt;
-        &lt;&lt;set _history = $CurrentSessionJourney[_word]&gt;&gt;
-        
-        /* 計算最終數值 */
-        &lt;&lt;set _finalA = _item.initA&gt;&gt;
-        &lt;&lt;set _finalH = _item.initH&gt;&gt;
-        &lt;&lt;set _finalPts = _item.initPts&gt;&gt;
-        &lt;&lt;set _finalE = _item.initE || 0&gt;&gt;
-        &lt;&lt;set _tempStreak = _item.initStreak || 0&gt;&gt;
-        
-        &lt;&lt;for _res range _history&gt;&gt;
-            &lt;&lt;if _res === &quot;Easy&quot;&gt;&gt;
-                &lt;&lt;set _tempStreak += 1&gt;&gt;
-                &lt;&lt;set _finalE += 1&gt;&gt;
-                &lt;&lt;set _finalPts += _tempStreak&gt;&gt;
-            &lt;&lt;else&gt;&gt;
-                &lt;&lt;set _tempStreak = 0&gt;&gt;
-                &lt;&lt;if _res === &quot;Again&quot;&gt;&gt;&lt;&lt;set _finalA += 1&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;set _finalH += 1&gt;&gt;&lt;&lt;/if&gt;&gt;
-            &lt;&lt;/if&gt;&gt;
-        &lt;&lt;/for&gt;&gt;
-        
-        &lt;&lt;set _start = _item.startStatus&gt;&gt;
-        &lt;&lt;set _end = setup.determineStatus(_finalA, _finalH, _finalPts, _finalE)&gt;&gt;
-        
-        &lt;&lt;if _start === &quot;新&quot;&gt;&gt;
-            &lt;&lt;run _changes[&quot;✨ 全新學習&quot;].push(_word)&gt;&gt;
-        &lt;&lt;elseif _start === _end&gt;&gt;
-            &lt;&lt;if _start === &quot;熟悉&quot;&gt;&gt; &lt;&lt;run _changes[&quot;💎 維持熟悉&quot;].push(_word)&gt;&gt;
-            &lt;&lt;else&gt;&gt; &lt;&lt;run _changes[&quot;✊ 原地踏步&quot;].push(_word)&gt;&gt; &lt;&lt;/if&gt;&gt;
-        &lt;&lt;elseif _start === &quot;模糊&quot; &amp;&amp; _end === &quot;熟悉&quot;&gt;&gt; &lt;&lt;run _changes[&quot;📈 進步：模糊 ➔ 熟悉&quot;].push(_word)&gt;&gt;
-        &lt;&lt;elseif _start === &quot;不熟&quot; &amp;&amp; _end === &quot;熟悉&quot;&gt;&gt; &lt;&lt;run _changes[&quot;📈 進步：不熟 ➔ 熟悉&quot;].push(_word)&gt;&gt;
-        &lt;&lt;elseif _start === &quot;不熟&quot; &amp;&amp; _end === &quot;模糊&quot;&gt;&gt; &lt;&lt;run _changes[&quot;📈 進步：不熟 ➔ 模糊&quot;].push(_word)&gt;&gt;
-        &lt;&lt;elseif _start === &quot;熟悉&quot; &amp;&amp; _end !== &quot;熟悉&quot;&gt;&gt; &lt;&lt;run _changes[&quot;📉 退步：熟悉 ➔ 模糊/不熟&quot;].push(_word)&gt;&gt;
-        &lt;&lt;elseif _start === &quot;模糊&quot; &amp;&amp; _end === &quot;不熟&quot;&gt;&gt; &lt;&lt;run _changes[&quot;📉 退步：模糊 ➔ 不熟&quot;].push(_word)&gt;&gt;
-        &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/for&gt;&gt;
-
-    &lt;!-- 1. 變化摘要區 --&gt;
-    &lt;div style=&quot;text-align:left; background:#222; padding:15px; border-radius:12px; margin:15px 0; border: 1px solid #444;&quot;&gt;
-        &lt;strong style=&quot;color:#00ffcc; font-size:1.1em;&quot;&gt;📊 本輪記憶程度變化：&lt;/strong&gt;
-        &lt;hr style=&quot;border-color:#333; margin:10px 0;&quot;&gt;
-        &lt;&lt;for _label, _list range _changes&gt;&gt;
-            &lt;&lt;if _list.length &gt; 0&gt;&gt;
-                &lt;div style=&quot;margin-bottom:8px; line-height:1.4;&quot;&gt;
-                    &lt;span style=&quot;color:#ffd700; font-size:0.9em; font-weight:bold;&quot;&gt;_label：&lt;/span&gt;
-                    &lt;span style=&quot;color:#eee; font-size:0.95em;&quot;&gt;&lt;&lt;print _list.join(&quot;、&quot;)&gt;&gt;&lt;/span&gt;
-                &lt;/div&gt;
-            &lt;&lt;/if&gt;&gt;
-        &lt;&lt;/for&gt;&gt;
-    &lt;/div&gt;
-
-    &lt;!-- 2. 詳細單字複習清單 --&gt;
-    &lt;div style=&quot;font-size:0.85em; color:#8af; margin: 20px 0 10px 0; text-align:left;&quot;&gt;
-        💡 點擊下方單字可查看釋義與詳細歷程：
-    &lt;/div&gt;
-    
-    &lt;div class=&quot;summary-container&quot; style=&quot;max-height: 300px; border: 1px solid #333; border-radius:8px;&quot;&gt;
-        &lt;&lt;for _i, _item range $SessionList&gt;&gt;
-            &lt;&lt;set _word to _item.word&gt;&gt;
-            &lt;&lt;set _trans to _item.trans&gt;&gt;
-            &lt;&lt;set _lang to _item.lang&gt;&gt;
-            &lt;&lt;set _history to $CurrentSessionJourney[_word]&gt;&gt;
-            &lt;&lt;set _code to setup.getJourneyCode(_history)&gt;&gt;
-            
-            &lt;&lt;capture _i, _word, _trans, _lang, _code&gt;&gt;
-                &lt;div class=&quot;summary-row&quot; style=&quot;padding: 8px 12px; border-bottom: 1px solid #222;&quot;&gt;
-                    &lt;span @id=&quot;&#39;area-&#39; + _i&quot; class=&quot;summary-word&quot;&gt;
-                        &lt;&lt;link _word&gt;&gt;
-                            &lt;&lt;replace `&quot;#area-&quot; + _i`&gt;&gt;
-                                &lt;&lt;include &quot;Toggle-Word-Info&quot;&gt;&gt;
-                            &lt;&lt;/replace&gt;&gt;
-                        &lt;&lt;/link&gt;&gt;
-                    &lt;/span&gt;
-                    &lt;span class=&quot;summary-action&quot;&gt;
-                        &lt;span style=&quot;font-size:0.8em; color:#888; margin-right:5px;&quot;&gt;(&lt;&lt;print setup.getLangName(_lang)&gt;&gt;)&lt;/span&gt;
-                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;
-                            &lt;&lt;run setup.speak(_word, _lang)&gt;&gt;
-                        &lt;&lt;/button&gt;&gt;
-                    &lt;/span&gt;
-                &lt;/div&gt;
-            &lt;&lt;/capture&gt;&gt;
-        &lt;&lt;/for&gt;&gt;
-    &lt;/div&gt;
-
-    /* 自動上傳 */
-    &lt;&lt;run setup.uploadSession()&gt;&gt;
-
-    &lt;div style=&quot;margin-top:25px;&quot;&gt;
-        &lt;&lt;button &quot;再練習 10 個名詞&quot;&gt;&gt;
-            &lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;
-            &lt;&lt;run setup.fetchWords()&gt;&gt;
-        &lt;&lt;/button&gt;&gt;
-        &lt;br&gt;&lt;br&gt;
-        [[返回首頁|Introduction]]
-    &lt;/div&gt;
-&lt;&lt;/nobr&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="Introduction" tags="" position="650,50" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
-    &lt;div id=&quot;stats-area&quot; class=&quot;stats-loading&quot;&gt;正在同步雲端進度...&lt;/div&gt;
-    &lt;&lt;done&gt;&gt;&lt;&lt;run setup.fetchStats()&gt;&gt;&lt;&lt;/done&gt;&gt;
-
-    &lt;h1&gt;🎵 音樂術語 AI 教練&lt;/h1&gt;
-    
-    &lt;!-- ★★★ 只有網址包含 dev=1 才會顯示這塊 ★★★ --&gt;
-   &lt;&lt;if setup.isDev&gt;&gt;
-    &lt;div class=&quot;dev-panel&quot;&gt;
-        &lt;label style=&quot;cursor: pointer; font-weight: bold;&quot;&gt;
-            &lt;&lt;checkbox &quot;$testMode&quot; false true&gt;&gt; 🛠️ 開啟「測試模式」
-        &lt;/label&gt;
-        &lt;div class=&quot;dev-subtext&quot;&gt;
-            (打勾後不寫入 Google Sheet，僅供老師測試)
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;&lt;/if&gt;&gt;
-
-    &lt;&lt;button &quot;開始學習 10 個名詞&quot;&gt;&gt;
-        &lt;&lt;run setup.fetchWords()&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
- &lt;!-- 加入這顆新按鈕 --&gt;
-    &lt;&lt;button &quot;📊 考前弱點掃描 (記憶儀表板)&quot;&gt;&gt;
-        &lt;&lt;run setup.fetchDashboard()&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-    &lt;div style=&quot;margin-top: 25px; font-size: 0.9em;&quot;&gt;
-        &lt;&lt;link &quot;🔍 查詢已複習術語庫&quot;&gt;&gt;&lt;&lt;run setup.fetchArchive()&gt;&gt;&lt;&lt;/link&gt;&gt; | 
-        [[📖 操作說明|Instructions]]
-    &lt;/div&gt;
+&lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.85em; color:var(--text-muted); margin-bottom: 10px;&quot;&gt;
+    📊 進度：$FinishedCount / $TotalInSession (本輪剩餘：$Queue.length)
 &lt;/div&gt;
-
-&lt;!-- ★★★ 最下方的直接跳轉測試，也一併隱藏起來 ★★★ --&gt;
-&lt;&lt;if setup.isDev&gt;&gt;
-&lt;div style=&quot;margin-top: 50px; opacity: 0.3;&quot;&gt;
-    &lt;&lt;link &quot;🛠️ 開發者測試：直接跳轉結算頁&quot;&gt;&gt;
-        &lt;&lt;run setup.testFinishPage()&gt;&gt;
-    &lt;&lt;/link&gt;&gt;
-&lt;/div&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;div style=&quot;text-align: right; margin-bottom: 10px;&quot;&gt;
-    &lt;&lt;button &quot;🌓 切換深淺風格&quot;&gt;&gt;
-        &lt;&lt;set settings.darkMode to !settings.darkMode&gt;&gt;
-        &lt;&lt;run Setting.save()&gt;&gt;
-        &lt;&lt;if settings.darkMode&gt;&gt;
-            &lt;&lt;run $(&#39;html&#39;).addClass(&#39;dark-mode&#39;)&gt;&gt;
-        &lt;&lt;else&gt;&gt;
-            &lt;&lt;run $(&#39;html&#39;).removeClass(&#39;dark-mode&#39;)&gt;&gt;
-        &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
-&lt;&lt;nobr&gt;&gt;
-&lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.8em; color:#666;&quot;&gt;進度：$FinishedCount / $TotalInSession (本輪：$Queue.length)&lt;/div&gt;
     
-    &lt;!-- 卡片正面 (問題區) --&gt;
+    &lt;!-- 1. 卡片正面 (問題區) --&gt;
     &lt;div class=&quot;front-section&quot;&gt;
         &lt;h1 class=&quot;word-title&quot;&gt;
             $Queue[0].word
         &lt;/h1&gt;
-        &lt;div style=&quot;font-size: 1.2em; color: #888; margin-bottom: 20px;&quot;&gt;
+        &lt;div style=&quot;font-size: 1.2em; color: var(--text-muted); margin-bottom: 20px;&quot;&gt;
             (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)
         &lt;/div&gt;
         &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;
@@ -827,71 +796,40 @@ $(document).on(':passagerender', function() {
         &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
 
-    &lt;hr style=&quot;border:0; border-top:1px solid #333; margin:15px 0;&quot;&gt;
+    &lt;hr style=&quot;border:0; border-top:2px solid var(--card-border); margin:25px 0;&quot;&gt;
 
-    &lt;!-- 判斷是否翻面 --&gt;
+    &lt;!-- 2. 判斷是否翻面 --&gt;
     &lt;&lt;if $IsFlipped&gt;&gt;
         
         &lt;!-- 卡片背面 (解答區) --&gt;
         &lt;div class=&quot;back-section&quot;&gt;
-            &lt;div class=&quot;translation&quot; style=&quot;color:#ffd700; font-size:2em; font-weight:bold;&quot;&gt;
+            &lt;!-- 翻譯文字：改用變數控制顏色 --&gt;
+            &lt;div class=&quot;translation&quot; style=&quot;font-size:2.5em; font-weight:bold; color: var(--trans-color);&quot;&gt;
                 $Queue[0].trans
             &lt;/div&gt;
             
+            &lt;!-- 📌 重點摘要區 (修正：確保這塊有顯示) --&gt;
             &lt;div class=&quot;notes-box&quot;&gt;
-                &lt;strong&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
-                $Queue[0].notes
+                &lt;strong style=&quot;color: var(--highlight);&quot;&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
+                &lt;span style=&quot;font-size: 1.1em;&quot;&gt;$Queue[0].notes&lt;/span&gt;
+                
+                &lt;!-- 📖 來源與頁數 --&gt;
                 &lt;div class=&quot;source-info&quot;&gt;
                     📖 來源：$Queue[0].source (第 $Queue[0].page 頁)
                 &lt;/div&gt;
             &lt;/div&gt;
 
-           &lt;!-- ★★★ 終極發音規則提示區 (內建迷你發音按鈕) ★★★ --&gt;
+           &lt;!-- 🗣️ 發音規則提示區 --&gt;
             &lt;&lt;set _langCode to $Queue[0].lang.toLowerCase()&gt;&gt;
-            
-            &lt;!-- 加上了 es 和 西 的判斷 --&gt;
             &lt;&lt;if _langCode.includes(&quot;it&quot;) or _langCode.includes(&quot;義&quot;) or _langCode.includes(&quot;de&quot;) or _langCode.includes(&quot;德&quot;) or _langCode.includes(&quot;fr&quot;) or _langCode.includes(&quot;法&quot;) or _langCode.includes(&quot;es&quot;) or _langCode.includes(&quot;西&quot;)&gt;&gt;
                 &lt;div class=&quot;pronunciation-box&quot;&gt;
-                    &lt;strong style=&quot;color:#fff;&quot;&gt;🗣️ 拼寫與發音小秘訣 (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)：&lt;/strong&gt;
-                    
-                    &lt;&lt;if _langCode.includes(&quot;it&quot;) or _langCode.includes(&quot;義&quot;)&gt;&gt;
-                        &lt;ul&gt;
-                            &lt;li&gt;&lt;b&gt;c&lt;/b&gt; 在 e, i 前發 &lt;b&gt;/ch/ (切)&lt;/b&gt; ➡️ 例: &lt;i&gt;Cello&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Cello&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ch&lt;/b&gt; 永遠發 &lt;b&gt;/k/ (克)&lt;/b&gt; ➡️ 例: &lt;i&gt;Scherzo&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Scherzo&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;g&lt;/b&gt; 在 e, i 前發 &lt;b&gt;/j/ (吉)&lt;/b&gt; ➡️ 例: &lt;i&gt;Adagio&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Adagio&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;zz&lt;/b&gt; 發 &lt;b&gt;/ts/ (次)&lt;/b&gt; ➡️ 例: &lt;i&gt;Pizzicato&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Pizzicato&#39;, &#39;it-IT&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;母音很單純：&lt;b&gt;a&lt;/b&gt;(啊), &lt;b&gt;e&lt;/b&gt;(ㄝ), &lt;b&gt;i&lt;/b&gt;(依), &lt;b&gt;o&lt;/b&gt;(喔), &lt;b&gt;u&lt;/b&gt;(嗚)&lt;/li&gt;
-                        &lt;/ul&gt;
-                    &lt;&lt;elseif _langCode.includes(&quot;de&quot;) or _langCode.includes(&quot;德&quot;)&gt;&gt;
-                        &lt;ul&gt;
-                            &lt;li&gt;&lt;b&gt;w&lt;/b&gt; 發英文的 &lt;b&gt;/v/&lt;/b&gt; ➡️ 例: &lt;i&gt;Wagner&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Wagner&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;v&lt;/b&gt; 發英文的 &lt;b&gt;/f/&lt;/b&gt; ➡️ 例: &lt;i&gt;von&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;von&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;j&lt;/b&gt; 發英文的 &lt;b&gt;/y/ (耶)&lt;/b&gt; ➡️ 例: &lt;i&gt;Johann&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Johann&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;z&lt;/b&gt; 發 &lt;b&gt;/ts/ (次)&lt;/b&gt; ➡️ 例: &lt;i&gt;Mozart&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Mozart&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ie&lt;/b&gt; 發長音 &lt;b&gt;/ee/ (依)&lt;/b&gt; ➡️ 例: &lt;i&gt;Lied&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Lied&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ei&lt;/b&gt; 發 &lt;b&gt;/eye/ (哎)&lt;/b&gt; ➡️ 例: &lt;i&gt;Zeit&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Zeit&#39;, &#39;de-DE&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                        &lt;/ul&gt;
-                    &lt;&lt;elseif _langCode.includes(&quot;fr&quot;) or _langCode.includes(&quot;法&quot;)&gt;&gt;
-                        &lt;ul&gt;
-                            &lt;li&gt;&lt;b&gt;字尾的子音&lt;/b&gt; 通常不發音 ➡️ 例: &lt;i&gt;Ballet&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Ballet&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ch&lt;/b&gt; 發英文的 &lt;b&gt;/sh/ (噓)&lt;/b&gt; ➡️ 例: &lt;i&gt;Chanson&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Chanson&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ou&lt;/b&gt; 發 &lt;b&gt;/oo/ (嗚)&lt;/b&gt; ➡️ 例: &lt;i&gt;Doux&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Doux&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;eau / au&lt;/b&gt; 發 &lt;b&gt;/o/ (喔)&lt;/b&gt; ➡️ 例: &lt;i&gt;Morceau&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Morceau&#39;, &#39;fr-FR&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                        &lt;/ul&gt;
-                    &lt;!-- ★★★ 新增：西班牙文 (es/西) 發音規則 ★★★ --&gt;
-                    &lt;&lt;elseif _langCode.includes(&quot;es&quot;) or _langCode.includes(&quot;西&quot;)&gt;&gt;
-                        &lt;ul&gt;
-                            &lt;li&gt;&lt;b&gt;j&lt;/b&gt; 以及 &lt;b&gt;g&lt;/b&gt;(在 e, i 前) 發 &lt;b&gt;/h/ (哈)&lt;/b&gt; ➡️ 例: &lt;i&gt;Gerónimo&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Gerónimo&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ll&lt;/b&gt; 發 &lt;b&gt;/y/ (耶)&lt;/b&gt; 的音 ➡️ 例: &lt;i&gt;Caballero&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Caballero&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;ñ&lt;/b&gt; 發 &lt;b&gt;/ny/ (捏)&lt;/b&gt; 的音 ➡️ 例: &lt;i&gt;España&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;España&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                            &lt;li&gt;&lt;b&gt;h&lt;/b&gt; 永遠 &lt;b&gt;不發音&lt;/b&gt; ➡️ 例: &lt;i&gt;Habanera&lt;/i&gt; &lt;button class=&quot;mini-audio-btn&quot; onclick=&quot;SugarCube.setup.speak(&#39;Habanera&#39;, &#39;es-ES&#39;)&quot;&gt;🔊&lt;/button&gt;&lt;/li&gt;
-                        &lt;/ul&gt;
-                    &lt;&lt;/if&gt;&gt;
+                    &lt;strong style=&quot;color:var(--text-color);&quot;&gt;🗣️ 拼寫與發音小秘訣 (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)：&lt;/strong&gt;
+                    &lt;&lt;print setup.getPronunciationRules($Queue[0].lang)&gt;&gt;
                 &lt;/div&gt;
             &lt;&lt;/if&gt;&gt;
 
-            &lt;!-- 記憶評估按鈕 (SRS 導航) --&gt;
-            &lt;div class=&quot;srs-nav&quot; style=&quot;margin-top: 20px;&quot;&gt;
+            &lt;!-- 記憶評估按鈕 (SRS) --&gt;
+            &lt;div class=&quot;srs-nav&quot; style=&quot;margin-top: 30px; display: flex; justify-content: center; gap: 10px;&quot;&gt;
                 &lt;&lt;button &quot;Again [1]&quot; &quot;Flashcard&quot;&gt;&gt;
                     &lt;&lt;run setup.logResult($Queue[0].word, &quot;Again&quot;)&gt;&gt;
                     &lt;&lt;set _item = $Queue.shift()&gt;&gt;
@@ -909,7 +847,7 @@ $(document).on(':passagerender', function() {
                     &lt;&lt;run $Queue.shift()&gt;&gt;
                     &lt;&lt;set $FinishedCount += 1&gt;&gt;
                     &lt;&lt;set $IsFlipped to false&gt;&gt;
-                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;&lt;&lt;/if&gt;&gt;
+                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;&lt;&lt;endif&gt;&gt;
                 &lt;&lt;/button&gt;&gt;
             &lt;/div&gt;
         &lt;/div&gt;
@@ -918,8 +856,140 @@ $(document).on(':passagerender', function() {
         &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
         
     &lt;&lt;else&gt;&gt;
-        &lt;!-- 卡片未翻面時顯示的按鈕 --&gt;
-        &lt;&lt;button &quot;顯示答案 (空白鍵)&quot;&gt;&gt;&lt;&lt;set $IsFlipped to true&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
+        &lt;!-- 卡片未翻面時 --&gt;
+        &lt;div style=&quot;margin: 20px 0;&quot;&gt;
+            &lt;&lt;button &quot;顯示答案 (空白鍵)&quot; &quot;Flashcard&quot;&gt;&gt;
+                &lt;&lt;set $IsFlipped to true&gt;&gt;
+            &lt;&lt;/button&gt;&gt;
+        &lt;/div&gt;
+    &lt;&lt;/if&gt;&gt;
+&lt;&lt;/nobr&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="Introduction" tags="" position="650,50" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;&lt;nobr&gt;&gt;
+    &lt;!-- 1. 頂部統計區 --&gt;
+    &lt;div id=&quot;stats-area&quot; class=&quot;stats-loading&quot;&gt;正在同步雲端進度...&lt;/div&gt;
+    &lt;&lt;done&gt;&gt;&lt;&lt;run setup.fetchStats()&gt;&gt;&lt;&lt;/done&gt;&gt;
+
+    &lt;!-- 2. 切換風格按鈕 (置頂靠右) --&gt;
+    &lt;div style=&quot;text-align: right; margin-bottom: 5px;&quot;&gt;
+        &lt;&lt;button &quot;🌓 風格&quot;&gt;&gt;
+            &lt;&lt;set settings.darkMode to !settings.darkMode&gt;&gt;
+            &lt;&lt;run Setting.save()&gt;&gt;
+            &lt;&lt;if settings.darkMode&gt;&gt;
+                &lt;&lt;run $(&#39;html&#39;).addClass(&#39;dark-mode&#39;)&gt;&gt;
+            &lt;&lt;else&gt;&gt;
+                &lt;&lt;run $(&#39;html&#39;).removeClass(&#39;dark-mode&#39;)&gt;&gt;
+            &lt;&lt;/if&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
+    &lt;/div&gt;
+
+    &lt;h1 style=&quot;margin-top: 0;&quot;&gt;🎵 音樂術語 AI 教練&lt;/h1&gt;
+    
+    &lt;!-- 3. 老師測試區 --&gt;
+    &lt;&lt;if setup.isDev&gt;&gt;
+        &lt;div class=&quot;dev-panel&quot; style=&quot;margin-bottom: 15px;&quot;&gt;
+            &lt;label style=&quot;cursor: pointer; font-weight: bold;&quot;&gt;
+                &lt;&lt;checkbox &quot;$testMode&quot; false true&gt;&gt; 🛠️ 開啟「測試模式」
+            &lt;/label&gt;
+            &lt;div class=&quot;dev-subtext&quot;&gt;(打勾後不寫入 Google Sheet)&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;&lt;/if&gt;&gt;
+
+    &lt;!-- 4. 核心模式按鈕區 (緊湊排版) --&gt;
+    &lt;div style=&quot;display: flex; flex-direction: column; gap: 12px; align-items: center; margin: 15px 0;&quot;&gt;
+        
+        &lt;!-- 一般練習 --&gt;
+        &lt;div style=&quot;width: 100%;&quot;&gt;
+            &lt;&lt;button &quot;🚀 開始練習 (10個混合名詞)&quot;&gt;&gt;
+                &lt;&lt;run setup.fetchWords(&quot;normal&quot;)&gt;&gt;
+            &lt;&lt;/button&gt;&gt;
+            &lt;div style=&quot;font-size: 0.8em; color: var(--text-muted); margin-top: 4px;&quot;&gt;混合新舊術語，啟動記憶演算法複習。&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- 裝飾分隔線 --&gt;
+        &lt;hr style=&quot;width: 60%; margin: 5px 0; opacity: 0.3; border-top: 1px solid var(--card-border);&quot;&gt;
+
+        &lt;!-- 地毯模式 --&gt;
+        &lt;div style=&quot;width: 100%;&quot;&gt;
+            &lt;&lt;button &quot;🧹 地毯模式 (10個全新名詞)&quot;&gt;&gt;
+                &lt;&lt;run setup.fetchWords(&quot;carpet&quot;)&gt;&gt;
+            &lt;&lt;/button&gt;&gt;
+            &lt;div style=&quot;font-size: 0.8em; color: var(--text-muted); margin-top: 4px;&quot;&gt;針對「未練習」術語進行地毯式掃描。&lt;/div&gt;
+        &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;!-- 5. 底部功能連結 --&gt;
+    &lt;div style=&quot;margin-top: 25px; border-top: 2px solid var(--card-border); padding-top: 20px;&quot;&gt;
+        &lt;&lt;button &quot;📊 考前弱點掃描 (記憶全覽儀表板)&quot;&gt;&gt;
+            &lt;&lt;run setup.fetchDashboard()&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
+        
+        &lt;p style=&quot;font-size: 0.9em; margin-top: 15px;&quot;&gt;
+            &lt;&lt;link &quot;🔍 查詢已複習庫&quot;&gt;&gt;&lt;&lt;run setup.fetchArchive()&gt;&gt;&lt;&lt;/link&gt;&gt; | 
+            [[📖 操作說明|Instructions]]
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;&lt;/nobr&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;max-width: 850px;&quot;&gt;
+&lt;&lt;nobr&gt;&gt;
+&lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.85em; color:var(--text-muted); margin-bottom: 10px;&quot;&gt;
+    📊 進度：$FinishedCount / $TotalInSession
+&lt;/div&gt;
+    
+    &lt;div class=&quot;front-section&quot;&gt;
+        &lt;h1 class=&quot;word-title&quot;&gt;$Queue[0].word&lt;/h1&gt;
+        &lt;div style=&quot;font-size: 1.2em; color: var(--text-muted); margin-bottom: 20px;&quot;&gt;
+            (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)
+        &lt;/div&gt;
+        &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;&lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;&lt;&lt;/button&gt;&gt;
+    &lt;/div&gt;
+
+    &lt;hr style=&quot;border:0; border-top:2px solid var(--card-border); margin:25px 0;&quot;&gt;
+
+    &lt;&lt;if $IsFlipped&gt;&gt;
+        &lt;div class=&quot;back-section&quot;&gt;
+            &lt;div class=&quot;translation&quot; style=&quot;font-size:2.5em; font-weight:bold; color: var(--trans-color); margin-bottom: 20px;&quot;&gt;
+                $Queue[0].trans
+            &lt;/div&gt;
+            
+            &lt;!-- 📌 重點摘要區 --&gt;
+            &lt;div class=&quot;notes-box&quot;&gt;
+                &lt;strong style=&quot;color: var(--highlight);&quot;&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
+                &lt;div style=&quot;font-size: 1.1em; margin: 10px 0; color: var(--text-color);&quot;&gt;
+                    $Queue[0].notes
+                &lt;/div&gt;
+                
+                &lt;div class=&quot;source-info&quot;&gt;
+                    📖 來源：$Queue[0].source (第 $Queue[0].page 頁)
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- SRS 按鈕 --&gt;
+            &lt;div class=&quot;srs-nav&quot; style=&quot;margin-top: 30px; display: flex; justify-content: center; gap: 10px;&quot;&gt;
+                &lt;&lt;button &quot;Again [1]&quot; &quot;Flashcard&quot;&gt;&gt;
+                    &lt;&lt;run setup.logResult($Queue[0].word, &quot;Again&quot;)&gt;&gt;
+                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;&lt;&lt;run $Queue.splice(2, 0, _item)&gt;&gt;
+                    &lt;&lt;set $IsFlipped to false&gt;&gt;
+                &lt;&lt;/button&gt;&gt;
+                &lt;&lt;button &quot;Hard [2]&quot; &quot;Flashcard&quot;&gt;&gt;
+                    &lt;&lt;run setup.logResult($Queue[0].word, &quot;Hard&quot;)&gt;&gt;
+                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;&lt;&lt;run $Queue.push(_item)&gt;&gt;
+                    &lt;&lt;set $IsFlipped to false&gt;&gt;
+                &lt;&lt;/button&gt;&gt;
+                &lt;&lt;button &quot;Easy [3]&quot;&gt;&gt;
+                    &lt;&lt;run setup.logResult($Queue[0].word, &quot;Easy&quot;)&gt;&gt;
+                    &lt;&lt;run $Queue.shift()&gt;&gt;&lt;&lt;set $FinishedCount += 1&gt;&gt;
+                    &lt;&lt;set $IsFlipped to false&gt;&gt;
+                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;&lt;&lt;endif&gt;&gt;
+                &lt;&lt;/button&gt;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
+    &lt;&lt;else&gt;&gt;
+        &lt;div style=&quot;margin: 20px 0;&quot;&gt;
+            &lt;&lt;button &quot;顯示答案 (空白鍵)&quot; &quot;Flashcard&quot;&gt;&gt;&lt;&lt;set $IsFlipped to true&gt;&gt;&lt;&lt;/button&gt;&gt;
+        &lt;/div&gt;
     &lt;&lt;/if&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="5" name="Instructions" tags="" position="625,375" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;text-align: left;&quot;&gt;
@@ -1009,7 +1079,7 @@ $(document).on(':passagerender', function() {
 &lt;span style=&quot;margin-left:10px; color:#00ffcc; font-family:monospace; background:#000; padding:2px 8px; border-radius:4px; border:1px solid #333; font-size:0.9em;&quot;&gt;
     _code
 &lt;/span&gt;
-&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="Dashboard" tags="" position="475,225" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="Dashboard" tags="" position="475,225" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;max-width: 850px;&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
     &lt;h2 style=&quot;margin-bottom: 5px;&quot;&gt;🎯 考前弱點掃描&lt;/h2&gt;
     &lt;div style=&quot;font-size:0.85em; color:#495057; margin-bottom:15px;&quot;&gt;
@@ -1032,38 +1102,57 @@ $(document).on(':passagerender', function() {
         &lt;/h3&gt;
         
         &lt;div class=&quot;dash-main-container&quot; @id=&quot;_mainId&quot; style=&quot;display: none; padding-left: 10px;&quot;&gt;
+            
             &lt;&lt;for _s, _subObj range _mainObj.subGroups&gt;&gt;
                 &lt;div class=&quot;dash-sub-row dash-row&quot;&gt;
                     &lt;div class=&quot;dash-sub-label&quot; style=&quot;font-weight:bold; margin-bottom:8px; color:#666;&quot;&gt;_subObj.subCatName&lt;/div&gt;
                     &lt;div class=&quot;dash-badge-container&quot;&gt;
+                        
                         &lt;&lt;for _w, _item range _subObj.words&gt;&gt;
                             &lt;&lt;capture _item, _m, _s, _w&gt;&gt;
                                 &lt;&lt;set _detailId to &quot;detail-&quot; + _m + &quot;-&quot; + _s + &quot;-&quot; + _w&gt;&gt;
+                                
                                 &lt;div class=&quot;dash-item&quot; style=&quot;display: inline-block;&quot;&gt;
+                                    
                                     &lt;div class=&quot;dash-badge&quot; @data-target=&quot;_detailId&quot;&gt;
                                         &lt;span&gt;_item.dot&lt;/span&gt; _item.word
                                     &lt;/div&gt;
-                                    &lt;div class=&quot;dash-details&quot; @id=&quot;_detailId&quot; style=&quot;display:none; margin: 10px 5px; padding: 15px; border-radius: 8px;&quot;&gt;
-                                        &lt;!-- 這裡將翻譯改為深藍色，以確保白底可讀 --&gt;
-                                        &lt;span class=&quot;trans-text&quot; style=&quot;color:#1d4ed8; font-size:1.3em; font-weight:bold;&quot;&gt;_item.trans&lt;/span&gt;
+                                    
+                                    &lt;div class=&quot;dash-details&quot; @id=&quot;_detailId&quot;&gt;
+                                        &lt;span class=&quot;trans-text&quot; style=&quot;color:var(--trans-color); font-size:1.3em; font-weight:bold;&quot;&gt;_item.trans&lt;/span&gt;
                                         &lt;span style=&quot;font-size: 0.85em; color:#64748b; margin-left:10px;&quot;&gt;
                                             (狀態: _item.statusText)
                                         &lt;/span&gt;
+                                        
                                         &lt;div style=&quot;margin: 10px 0;&quot;&gt;
                                             &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;
                                                 &lt;&lt;run setup.speak(_item.word, _item.lang)&gt;&gt;
                                             &lt;&lt;/button&gt;&gt;
                                         &lt;/div&gt;
-                                        &lt;div class=&quot;notes-text&quot; style=&quot;color:#334155; font-size: 0.95em; line-height:1.6;&quot;&gt;
+
+                                        &lt;div class=&quot;notes-text&quot; style=&quot;color:var(--text-color); font-size: 0.95em; line-height:1.6;&quot;&gt;
                                             📌 &lt;strong&gt;重點：&lt;/strong&gt;_item.notes
                                         &lt;/div&gt;
+
+                                        &lt;!-- 📖 新增：來源資料顯示區 --&gt;
+                                        &lt;div style=&quot;margin-top: 10px; font-size: 0.85em; color: #666; border-top: 1px solid #ddd; padding-top: 8px;&quot;&gt;
+                                            📖 &lt;strong&gt;來源：&lt;/strong&gt;_item.source (第 _item.page 頁)
+                                        &lt;/div&gt;
+
+                                        &lt;!-- 🕒 新增：複習次數紀錄 --&gt;
+                                        &lt;div style=&quot;margin-top: 5px; font-size: 0.8em; color: #888; font-family: monospace;&quot;&gt;
+                                            🕒 &lt;strong&gt;歷史紀錄：&lt;/strong&gt;_item.history
+                                        &lt;/div&gt;
                                     &lt;/div&gt;
+
                                 &lt;/div&gt;
                             &lt;&lt;/capture&gt;&gt;
                         &lt;&lt;/for&gt;&gt;
+
                     &lt;/div&gt;
                 &lt;/div&gt;
             &lt;&lt;/for&gt;&gt;
+
         &lt;/div&gt;
     &lt;&lt;/for&gt;&gt;
     &lt;/div&gt;
