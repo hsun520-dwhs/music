@@ -104,7 +104,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.11.1" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* ==========================================
+	<tw-storydata name="音樂術語記憶系統" startnode="3" creator="Twine" creator-version="2.12.0" format="SugarCube" format-version="2.37.3" ifid="a278ff44-8f6e-415f-b93d-3689e18edff9" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* ==========================================
    1. 顏色變數定義 (支援深淺色切換)
    ========================================== */
 :root {
@@ -439,21 +439,25 @@ setup.fetchStats = function() {
 
 // B. 提取 10 個名詞 (支援地毯模式)
 setup.fetchWords = function(mode) {
-    var loadingMsg = (mode === "carpet") ? "地毯模式：正在提取全新名詞..." : "正在提取練習名詞...";
-    $('#stats-area').html('<div class="stats-loading">' + loadingMsg + '</div>');
+    $('#stats-area').html('<div class="stats-loading">正在載入名詞...</div>');
     
     setup.callGAS({ action: "getWords", mode: mode }, function(data) {
-        if (data.length === 0) {
-            // 地毯模式完成的提示
-            UI.alert("🎊 太棒了！所有術語都已經至少練習過一次。地毯模式已完成，請切換回「一般模式」進行循環複習！");
-            setup.fetchStats(); // 重新整理首頁數據
+        // 🛑 如果 GAS 回傳空資料
+        if (!data || data.length === 0) {
+            if (mode === "carpet") {
+                UI.alert("🎊 地毯模式已完成！所有術語都已練習過一次。");
+            } else {
+                UI.alert("⚠️ 目前沒有可練習的名詞，請稍後再試。");
+            }
+            setup.fetchStats(); // 回到首頁更新數據
             return;
         }
         
         State.variables.Queue = data.map(function(item) {
-            item.startStatus = setup.determineStatus(item.initA, item.initH, item.initPts, item.initE || 0);
+            item.startStatus = setup.determineStatus(item.initA, item.initH, item.initPts, item.initE);
             return item;
         });
+        
         State.variables.SessionList = State.variables.Queue.slice();
         State.variables.TotalInSession = data.length;
         State.variables.FinishedCount = 0;
@@ -779,90 +783,46 @@ $(document).on(':passagerender', function() {
 &lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;
 &lt;&lt;set $testMode to false&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="FinishPage" tags="" position="850,200" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;max-width: 850px;&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
-&lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.85em; color:var(--text-muted); margin-bottom: 10px;&quot;&gt;
-    📊 進度：$FinishedCount / $TotalInSession (本輪剩餘：$Queue.length)
-&lt;/div&gt;
-    
-    &lt;!-- 1. 卡片正面 (問題區) --&gt;
-    &lt;div class=&quot;front-section&quot;&gt;
-        &lt;h1 class=&quot;word-title&quot;&gt;
-            $Queue[0].word
-        &lt;/h1&gt;
-        &lt;div style=&quot;font-size: 1.2em; color: var(--text-muted); margin-bottom: 20px;&quot;&gt;
-            (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)
-        &lt;/div&gt;
-        &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;
-            &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
-        &lt;&lt;/button&gt;&gt;
+    &lt;h2 style=&quot;margin-bottom:10px !important;&quot;&gt;🎉 練習完成！&lt;/h2&gt;
+    &lt;p class=&quot;stats-sub&quot;&gt;完成時間：&lt;&lt;print new Date().toLocaleString()&gt;&gt;&lt;/p&gt;
+
+    &lt;!-- 變化摘要區 --&gt;
+    &lt;div style=&quot;text-align:left; background:var(--stats-bg); padding:15px; border-radius:12px; margin:15px 0; border: 1px solid var(--card-border);&quot;&gt;
+        &lt;strong style=&quot;color:var(--highlight); font-size:1.1em;&quot;&gt;📊 本輪記憶程度變化：&lt;/strong&gt;
+        &lt;hr style=&quot;border-color:var(--card-border); margin:10px 0;&quot;&gt;
+        &lt;p style=&quot;font-size: 0.9em; color: var(--text-color);&quot;&gt;請至首頁同步最新進度。&lt;/p&gt;
     &lt;/div&gt;
 
-    &lt;hr style=&quot;border:0; border-top:2px solid var(--card-border); margin:25px 0;&quot;&gt;
-
-    &lt;!-- 2. 判斷是否翻面 --&gt;
-    &lt;&lt;if $IsFlipped&gt;&gt;
-        
-        &lt;!-- 卡片背面 (解答區) --&gt;
-        &lt;div class=&quot;back-section&quot;&gt;
-            &lt;!-- 翻譯文字：改用變數控制顏色 --&gt;
-            &lt;div class=&quot;translation&quot; style=&quot;font-size:2.5em; font-weight:bold; color: var(--trans-color);&quot;&gt;
-                $Queue[0].trans
-            &lt;/div&gt;
-            
-            &lt;!-- 📌 重點摘要區 (修正：確保這塊有顯示) --&gt;
-            &lt;div class=&quot;notes-box&quot;&gt;
-                &lt;strong style=&quot;color: var(--highlight);&quot;&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
-                &lt;span style=&quot;font-size: 1.1em;&quot;&gt;$Queue[0].notes&lt;/span&gt;
-                
-                &lt;!-- 📖 來源與頁數 --&gt;
-                &lt;div class=&quot;source-info&quot;&gt;
-                    📖 來源：$Queue[0].source (第 $Queue[0].page 頁)
+    &lt;!-- 詳細清單容器 (修正重疊問題) --&gt;
+    &lt;div class=&quot;summary-container&quot; style=&quot;max-height: 350px; overflow-y: auto; margin-bottom: 20px;&quot;&gt;
+        &lt;&lt;for _i, _item range $SessionList&gt;&gt;
+            &lt;&lt;capture _i, _item&gt;&gt;
+                &lt;div class=&quot;summary-row&quot;&gt;
+                    &lt;span style=&quot;flex:1; text-align: left;&quot;&gt;
+                        &lt;strong&gt;&lt;&lt;print _item.word&gt;&gt;&lt;/strong&gt;: &lt;&lt;print _item.trans&gt;&gt;
+                    &lt;/span&gt;
+                    &lt;span class=&quot;summary-action&quot;&gt;
+                        &lt;span style=&quot;font-size:0.8em; color:var(--text-muted); margin-right:5px;&quot;&gt;(&lt;&lt;print setup.getLangName(_item.lang)&gt;&gt;)&lt;/span&gt;
+                        &lt;&lt;button &quot;🔊&quot;&gt;&gt;
+                            &lt;&lt;run setup.speak(_item.word, _item.lang)&gt;&gt;
+                        &lt;&lt;/button&gt;&gt;
+                    &lt;/span&gt;
                 &lt;/div&gt;
-            &lt;/div&gt;
+            &lt;&lt;/capture&gt;&gt;
+        &lt;&lt;/for&gt;&gt;
+    &lt;/div&gt;
 
-           &lt;!-- 🗣️ 發音規則提示區 --&gt;
-            &lt;&lt;set _langCode to $Queue[0].lang.toLowerCase()&gt;&gt;
-            &lt;&lt;if _langCode.includes(&quot;it&quot;) or _langCode.includes(&quot;義&quot;) or _langCode.includes(&quot;de&quot;) or _langCode.includes(&quot;德&quot;) or _langCode.includes(&quot;fr&quot;) or _langCode.includes(&quot;法&quot;) or _langCode.includes(&quot;es&quot;) or _langCode.includes(&quot;西&quot;)&gt;&gt;
-                &lt;div class=&quot;pronunciation-box&quot;&gt;
-                    &lt;strong style=&quot;color:var(--text-color);&quot;&gt;🗣️ 拼寫與發音小秘訣 (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)：&lt;/strong&gt;
-                    &lt;&lt;print setup.getPronunciationRules($Queue[0].lang)&gt;&gt;
-                &lt;/div&gt;
-            &lt;&lt;/if&gt;&gt;
+    /* 自動上傳 */
+    &lt;&lt;run setup.uploadSession()&gt;&gt;
 
-            &lt;!-- 記憶評估按鈕 (SRS) --&gt;
-            &lt;div class=&quot;srs-nav&quot; style=&quot;margin-top: 30px; display: flex; justify-content: center; gap: 10px;&quot;&gt;
-                &lt;&lt;button &quot;Again [1]&quot; &quot;Flashcard&quot;&gt;&gt;
-                    &lt;&lt;run setup.logResult($Queue[0].word, &quot;Again&quot;)&gt;&gt;
-                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;
-                    &lt;&lt;run $Queue.splice(2, 0, _item)&gt;&gt;
-                    &lt;&lt;set $IsFlipped to false&gt;&gt;
-                &lt;&lt;/button&gt;&gt;
-                &lt;&lt;button &quot;Hard [2]&quot; &quot;Flashcard&quot;&gt;&gt;
-                    &lt;&lt;run setup.logResult($Queue[0].word, &quot;Hard&quot;)&gt;&gt;
-                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;
-                    &lt;&lt;run $Queue.push(_item)&gt;&gt;
-                    &lt;&lt;set $IsFlipped to false&gt;&gt;
-                &lt;&lt;/button&gt;&gt;
-                &lt;&lt;button &quot;Easy [3]&quot;&gt;&gt;
-                    &lt;&lt;run setup.logResult($Queue[0].word, &quot;Easy&quot;)&gt;&gt;
-                    &lt;&lt;run $Queue.shift()&gt;&gt;
-                    &lt;&lt;set $FinishedCount += 1&gt;&gt;
-                    &lt;&lt;set $IsFlipped to false&gt;&gt;
-                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;&lt;&lt;endif&gt;&gt;
-                &lt;&lt;/button&gt;&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-        
-        &lt;!-- 翻面時自動發音一次 --&gt;
-        &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
-        
-    &lt;&lt;else&gt;&gt;
-        &lt;!-- 卡片未翻面時 --&gt;
-        &lt;div style=&quot;margin: 20px 0;&quot;&gt;
-            &lt;&lt;button &quot;顯示答案 (空白鍵)&quot; &quot;Flashcard&quot;&gt;&gt;
-                &lt;&lt;set $IsFlipped to true&gt;&gt;
-            &lt;&lt;/button&gt;&gt;
-        &lt;/div&gt;
-    &lt;&lt;/if&gt;&gt;
+    &lt;div class=&quot;finish-footer&quot;&gt;
+        &lt;&lt;button &quot;🚀 再練習 10 個名詞&quot;&gt;&gt;
+            &lt;&lt;set $CurrentSessionJourney to {}&gt;&gt;
+            &lt;&lt;run setup.fetchWords(&quot;normal&quot;)&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
+        &lt;br&gt;&lt;br&gt;
+        [[⬅️ 返回首頁|Introduction]]
+    &lt;/div&gt;
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="Introduction" tags="" position="650,50" size="100,100">&lt;div class=&quot;card-box&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
@@ -933,64 +893,98 @@ $(document).on(':passagerender', function() {
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="4" name="Flashcard" tags="" position="650,225" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;max-width: 850px;&quot;&gt;
 &lt;&lt;nobr&gt;&gt;
-&lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.85em; color:var(--text-muted); margin-bottom: 10px;&quot;&gt;
-    📊 進度：$FinishedCount / $TotalInSession
-&lt;/div&gt;
+
+/* 🛑 核心防錯：如果隊列空了，立刻跳轉，不執行後面的渲染 */
+&lt;&lt;if !$Queue || $Queue.length === 0&gt;&gt;
+    &lt;&lt;if $FinishedCount &gt; 0&gt;&gt;
+        &lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;
+    &lt;&lt;else&gt;&gt;
+        &lt;div style=&quot;padding: 20px;&quot;&gt;
+            &lt;h3&gt;⚠️ 資料加載異常&lt;/h3&gt;
+            &lt;p&gt;題目隊列為空，請回首頁重新開始。&lt;/p&gt;
+            [[返回首頁|Introduction]]
+        &lt;/div&gt;
+    &lt;&lt;/if&gt;&gt;
+&lt;&lt;else&gt;&gt;
+
+    &lt;!-- 進度顯示 --&gt;
+    &lt;div class=&quot;progress-text&quot; style=&quot;font-size:0.85em; color:var(--text-muted); margin-bottom: 10px;&quot;&gt;
+        📊 進度：$FinishedCount / $TotalInSession (本輪剩餘：$Queue.length)
+    &lt;/div&gt;
     
+    &lt;!-- 1. 卡片正面 --&gt;
     &lt;div class=&quot;front-section&quot;&gt;
-        &lt;h1 class=&quot;word-title&quot;&gt;$Queue[0].word&lt;/h1&gt;
+        &lt;h1 class=&quot;word-title&quot;&gt;
+            &lt;&lt;print $Queue[0].word&gt;&gt;
+        &lt;/h1&gt;
         &lt;div style=&quot;font-size: 1.2em; color: var(--text-muted); margin-bottom: 20px;&quot;&gt;
             (&lt;&lt;print setup.getLangName($Queue[0].lang)&gt;&gt;)
         &lt;/div&gt;
-        &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;&lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;&lt;&lt;/button&gt;&gt;
+        &lt;&lt;button &quot;🔊 聽發音&quot;&gt;&gt;
+            &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
 
     &lt;hr style=&quot;border:0; border-top:2px solid var(--card-border); margin:25px 0;&quot;&gt;
 
+    &lt;!-- 2. 解答區 --&gt;
     &lt;&lt;if $IsFlipped&gt;&gt;
         &lt;div class=&quot;back-section&quot;&gt;
+            &lt;!-- 翻譯文字 --&gt;
             &lt;div class=&quot;translation&quot; style=&quot;font-size:2.5em; font-weight:bold; color: var(--trans-color); margin-bottom: 20px;&quot;&gt;
-                $Queue[0].trans
+                &lt;&lt;print $Queue[0].trans&gt;&gt;
             &lt;/div&gt;
             
-            &lt;!-- 📌 重點摘要區 --&gt;
+            &lt;!-- 📌 重點摘要與來源 (確保顯示出來) --&gt;
             &lt;div class=&quot;notes-box&quot;&gt;
                 &lt;strong style=&quot;color: var(--highlight);&quot;&gt;📌 重點摘要：&lt;/strong&gt;&lt;br&gt;
-                &lt;div style=&quot;font-size: 1.1em; margin: 10px 0; color: var(--text-color);&quot;&gt;
-                    $Queue[0].notes
+                &lt;div style=&quot;font-size: 1.1em; margin: 10px 0; color: var(--text-color); text-align: left;&quot;&gt;
+                    &lt;&lt;print $Queue[0].notes&gt;&gt;
                 &lt;/div&gt;
                 
-                &lt;div class=&quot;source-info&quot;&gt;
-                    📖 來源：$Queue[0].source (第 $Queue[0].page 頁)
+                &lt;div class=&quot;source-info&quot; style=&quot;border-top: 1px solid var(--card-border); padding-top: 8px; font-size: 0.85em; color: var(--text-muted); text-align: left;&quot;&gt;
+                    📖 來源：&lt;&lt;print $Queue[0].source&gt;&gt; (第 &lt;&lt;print $Queue[0].page&gt;&gt; 頁)
                 &lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;!-- SRS 按鈕 --&gt;
+            &lt;!-- SRS 評分按鈕 --&gt;
             &lt;div class=&quot;srs-nav&quot; style=&quot;margin-top: 30px; display: flex; justify-content: center; gap: 10px;&quot;&gt;
                 &lt;&lt;button &quot;Again [1]&quot; &quot;Flashcard&quot;&gt;&gt;
                     &lt;&lt;run setup.logResult($Queue[0].word, &quot;Again&quot;)&gt;&gt;
-                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;&lt;&lt;run $Queue.splice(2, 0, _item)&gt;&gt;
+                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;
+                    &lt;&lt;run $Queue.splice(2, 0, _item)&gt;&gt;
                     &lt;&lt;set $IsFlipped to false&gt;&gt;
                 &lt;&lt;/button&gt;&gt;
                 &lt;&lt;button &quot;Hard [2]&quot; &quot;Flashcard&quot;&gt;&gt;
                     &lt;&lt;run setup.logResult($Queue[0].word, &quot;Hard&quot;)&gt;&gt;
-                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;&lt;&lt;run $Queue.push(_item)&gt;&gt;
+                    &lt;&lt;set _item = $Queue.shift()&gt;&gt;
+                    &lt;&lt;run $Queue.push(_item)&gt;&gt;
                     &lt;&lt;set $IsFlipped to false&gt;&gt;
                 &lt;&lt;/button&gt;&gt;
                 &lt;&lt;button &quot;Easy [3]&quot;&gt;&gt;
                     &lt;&lt;run setup.logResult($Queue[0].word, &quot;Easy&quot;)&gt;&gt;
-                    &lt;&lt;run $Queue.shift()&gt;&gt;&lt;&lt;set $FinishedCount += 1&gt;&gt;
+                    &lt;&lt;run $Queue.shift()&gt;&gt;
+                    &lt;&lt;set $FinishedCount += 1&gt;&gt;
                     &lt;&lt;set $IsFlipped to false&gt;&gt;
-                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;&lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;&lt;&lt;else&gt;&gt;&lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;&lt;&lt;endif&gt;&gt;
+                    &lt;&lt;if $Queue.length &gt; 0&gt;&gt;
+                        &lt;&lt;goto &quot;Flashcard&quot;&gt;&gt;
+                    &lt;&lt;else&gt;&gt;
+                        &lt;&lt;goto &quot;FinishPage&quot;&gt;&gt;
+                    &lt;&lt;/if&gt;&gt;
                 &lt;&lt;/button&gt;&gt;
             &lt;/div&gt;
         &lt;/div&gt;
         &lt;&lt;run setup.speak($Queue[0].word, $Queue[0].lang)&gt;&gt;
     &lt;&lt;else&gt;&gt;
+        &lt;!-- 卡片未翻面 --&gt;
         &lt;div style=&quot;margin: 20px 0;&quot;&gt;
-            &lt;&lt;button &quot;顯示答案 (空白鍵)&quot; &quot;Flashcard&quot;&gt;&gt;&lt;&lt;set $IsFlipped to true&gt;&gt;&lt;&lt;/button&gt;&gt;
+            &lt;&lt;button &quot;顯示答案 (空白鍵)&quot; &quot;Flashcard&quot;&gt;&gt;
+                &lt;&lt;set $IsFlipped to true&gt;&gt;
+            &lt;&lt;/button&gt;&gt;
         &lt;/div&gt;
     &lt;&lt;/if&gt;&gt;
+
+&lt;&lt;/if&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="5" name="Instructions" tags="" position="625,375" size="100,100">&lt;div class=&quot;card-box&quot; style=&quot;text-align: left;&quot;&gt;
 ## 📖 系統操作說明
